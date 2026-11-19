@@ -14,3 +14,5 @@ runs/*/checkpoint*/
 *.log
 runs/sft/
 runs/sft_grpo/
+runs/grpo_v1_lenient/adapter_model.safetensors
+runs/*/README.md
