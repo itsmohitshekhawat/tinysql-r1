@@ -1,0 +1,3788 @@
+{
+ "train": [
+  {
+   "db": "shop",
+   "question": "Which customers are from Madrid or Lagos?",
+   "sql": "SELECT name FROM customers WHERE city IN ('Madrid', 'Lagos')",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "Which products have appeared in more than one order, and what is their total quantity sold?",
+   "sql": "SELECT p.name, SUM(o.quantity) FROM products p JOIN orders o ON o.product_id = p.id GROUP BY p.id HAVING COUNT(o.id) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "How many orders has each customer placed?",
+   "sql": "SELECT customer_id, COUNT(*) FROM orders GROUP BY customer_id",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Which products are in the Electronics category?",
+   "sql": "SELECT name FROM products WHERE category = 'Electronics'",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "What is the average product price in each category?",
+   "sql": "SELECT category, AVG(price) AS avg_price FROM products GROUP BY category",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Show customer names and order dates for orders that include a quantity of 2.",
+   "sql": "SELECT c.name, o.order_date FROM orders o JOIN customers c ON c.id = o.customer_id WHERE o.quantity = 2",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Show me the first three orders by order date.",
+   "sql": "SELECT id, order_date FROM orders ORDER BY order_date LIMIT 3",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "What are the three most expensive products?",
+   "sql": "SELECT name, price FROM products ORDER BY price DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "How many products are in the Electronics category?",
+   "sql": "SELECT COUNT(*) AS product_count FROM products WHERE category = 'Electronics'",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "List the product names in alphabetical order.",
+   "sql": "SELECT name FROM products ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "How many orders were placed in each year?",
+   "sql": "SELECT substr(order_date, 1, 4), COUNT(*) FROM orders GROUP BY substr(order_date, 1, 4)",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Show customer names and order dates for Electronics products ordered in 2022 or 2024.",
+   "sql": "SELECT DISTINCT c.name, o.order_date FROM orders o JOIN customers c ON c.id = o.customer_id JOIN products p ON p.id = o.product_id WHERE p.category = 'Electronics' AND (o.order_date LIKE '2022%' OR o.order_date LIKE '2024%')",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "Find customers whose name starts with 'A' and show the total number of orders each has placed.",
+   "sql": "SELECT c.name, COUNT(o.id) AS orders_count FROM customers c LEFT JOIN orders o ON o.customer_id = c.id WHERE c.name LIKE 'A%' GROUP BY c.id, c.name",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Which order was placed on 2022-09-09?",
+   "sql": "SELECT id, customer_id, product_id FROM orders WHERE order_date = '2022-09-09'",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "What is the name and price of the most expensive product?",
+   "sql": "SELECT name, price FROM products ORDER BY price DESC LIMIT 1",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "Which customer placed the most recent order?",
+   "sql": "SELECT c.name FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.order_date = (SELECT MAX(order_date) FROM orders)",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "Which customers have never placed an order?",
+   "sql": "SELECT name FROM customers WHERE id NOT IN (SELECT customer_id FROM orders)",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "What different cities do our customers come from?",
+   "sql": "SELECT DISTINCT city FROM customers",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "For each city, what is the average number of orders per customer?",
+   "sql": "SELECT city, AVG(cnt) FROM (SELECT c.city, COUNT(o.id) AS cnt FROM customers c LEFT JOIN orders o ON o.customer_id = c.id GROUP BY c.id) sub GROUP BY city",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "Which products have generated more than 200 in sales revenue?",
+   "sql": "SELECT p.name, SUM(o.quantity * p.price) AS revenue FROM products p JOIN orders o ON p.id = o.product_id GROUP BY p.id, p.name HAVING SUM(o.quantity * p.price) > 200",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "Show the two most expensive Electronics products.",
+   "sql": "SELECT name, price FROM products WHERE category = 'Electronics' ORDER BY price DESC LIMIT 2",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Which customers signed up before 2023 and have placed at least one order for more than one unit?",
+   "sql": "SELECT DISTINCT c.name FROM customers c JOIN orders o ON c.id = o.customer_id WHERE c.signup_year < 2023 AND o.quantity > 1",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "Which products are priced above the average product price?",
+   "sql": "SELECT name, price FROM products WHERE price > (SELECT AVG(price) FROM products)",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "Which cities have customers who ordered more than one item in total?",
+   "sql": "SELECT c.city, SUM(o.quantity) AS total_quantity FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.city HAVING SUM(o.quantity) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "Which customer placed order id 1?",
+   "sql": "SELECT c.name FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.id = 1",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Show each customer's name and total amount spent across all orders, including customers who spent nothing, highest total first.",
+   "sql": "SELECT c.name, COALESCE(SUM(o.quantity * p.price), 0) AS total_spent FROM customers c LEFT JOIN orders o ON o.customer_id = c.id LEFT JOIN products p ON p.id = o.product_id GROUP BY c.id, c.name ORDER BY total_spent DESC",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "Which products have 'board' in their name?",
+   "sql": "SELECT name FROM products WHERE name LIKE '%board%'",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "What is the highest product price in the catalog?",
+   "sql": "SELECT MAX(price) FROM products",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "Which orders include more than one unit, and what product was ordered?",
+   "sql": "SELECT o.id, p.name, o.quantity FROM orders o JOIN products p ON o.product_id = p.id WHERE o.quantity > 1",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Find customers who signed up before 2024 but have not ordered anything in 2024.",
+   "sql": "SELECT c.name FROM customers c WHERE c.signup_year < 2024 AND NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id AND o.order_date LIKE '2024%')",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "Which customers signed up before 2020 and have ordered something from Electronics?",
+   "sql": "SELECT DISTINCT c.name FROM customers c JOIN orders o ON o.customer_id = c.id JOIN products p ON p.id = o.product_id WHERE c.signup_year < 2020 AND p.category = 'Electronics'",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "List customers who have ordered more than one distinct product, showing the customer name and distinct product count.",
+   "sql": "SELECT c.name, COUNT(DISTINCT o.product_id) AS distinct_products FROM customers c JOIN orders o ON o.customer_id = c.id GROUP BY c.id, c.name HAVING COUNT(DISTINCT o.product_id) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "Which customers have spent more than 300 in total?",
+   "sql": "SELECT c.name, SUM(o.quantity * p.price) AS total_spent FROM customers c JOIN orders o ON c.id = o.customer_id JOIN products p ON p.id = o.product_id GROUP BY c.id, c.name HAVING SUM(o.quantity * p.price) > 300",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "What are the names and prices of electronics products cheaper than 100?",
+   "sql": "SELECT name, price FROM products WHERE category = 'Electronics' AND price < 100",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "Can you list product names in alphabetical order?",
+   "sql": "SELECT name FROM products ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "Show each product's name and the total revenue it generated from orders.",
+   "sql": "SELECT p.name, SUM(o.quantity * p.price) FROM products p JOIN orders o ON o.product_id = p.id GROUP BY p.id",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Which customers have ordered both a product priced above 100 and a product priced below 100?",
+   "sql": "SELECT c.name FROM customers c JOIN orders o ON o.customer_id = c.id JOIN products p ON p.id = o.product_id GROUP BY c.id HAVING SUM(CASE WHEN p.price > 100 THEN 1 ELSE 0 END) > 0 AND SUM(CASE WHEN p.price < 100 THEN 1 ELSE 0 END) > 0",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "Which customers from Madrid have placed at least one order?",
+   "sql": "SELECT DISTINCT c.name FROM customers c JOIN orders o ON o.customer_id = c.id WHERE c.city = 'Madrid'",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Show each product's name and total quantity ordered.",
+   "sql": "SELECT p.name, SUM(o.quantity) AS total_quantity FROM orders o JOIN products p ON p.id = o.product_id GROUP BY p.id, p.name",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "What are the two most expensive products?",
+   "sql": "SELECT name, price FROM products ORDER BY price DESC LIMIT 2",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Which customer names are linked to orders placed during 2022?",
+   "sql": "SELECT DISTINCT c.name FROM customers c JOIN orders o ON o.customer_id = c.id WHERE o.order_date LIKE '2022%'",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "How many customers signed up in 2024?",
+   "sql": "SELECT COUNT(*) FROM customers WHERE signup_year = 2024",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "Which customers signed up after 2020? Show their names and signup years, newest signup first.",
+   "sql": "SELECT name, signup_year FROM customers WHERE signup_year > 2020 ORDER BY signup_year DESC",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "What is the total quantity ordered for each product?",
+   "sql": "SELECT p.name, SUM(o.quantity) AS total_quantity FROM products p JOIN orders o ON p.id = o.product_id GROUP BY p.id, p.name",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "What is the total quantity sold for each product?",
+   "sql": "SELECT product_id, SUM(quantity) FROM orders GROUP BY product_id",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "What is the average product price by category?",
+   "sql": "SELECT category, AVG(price) FROM products GROUP BY category",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Which product category has the highest average price?",
+   "sql": "SELECT category, AVG(price) AS avg_price FROM products GROUP BY category ORDER BY avg_price DESC LIMIT 1",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "What distinct cities do customers come from?",
+   "sql": "SELECT DISTINCT city FROM customers ORDER BY city",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "Which customers signed up in 2024?",
+   "sql": "SELECT name FROM customers WHERE signup_year = 2024",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "What is each customer's latest order date?",
+   "sql": "SELECT c.name, MAX(o.order_date) AS latest_order FROM customers c LEFT JOIN orders o ON c.id = o.customer_id GROUP BY c.id, c.name",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "What is the most expensive product?",
+   "sql": "SELECT name, price FROM products ORDER BY price DESC LIMIT 1",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "Show product names and prices for items under 100, cheapest first.",
+   "sql": "SELECT name, price FROM products WHERE price < 100 ORDER BY price ASC",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "How many products cost more than 200?",
+   "sql": "SELECT COUNT(*) FROM products WHERE price > 200",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "Which products were ordered during 2024?",
+   "sql": "SELECT DISTINCT p.name FROM products p JOIN orders o ON p.id = o.product_id WHERE o.order_date >= '2024-01-01' AND o.order_date < '2025-01-01'",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Show the orders placed in 2024 with their dates and quantities, ordered by date.",
+   "sql": "SELECT id, order_date, quantity FROM orders WHERE order_date LIKE '2024%' ORDER BY order_date",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "Which customer placed the largest single order by quantity, and how many units was it?",
+   "sql": "SELECT c.name, o.quantity FROM orders o JOIN customers c ON c.id = o.customer_id WHERE o.quantity = (SELECT MAX(quantity) FROM orders)",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "Count how many orders each customer has placed, showing the customer's name.",
+   "sql": "SELECT c.name, COUNT(o.id) AS order_count FROM customers c LEFT JOIN orders o ON o.customer_id = c.id GROUP BY c.id, c.name",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Which customers have never ordered an electronics product?",
+   "sql": "SELECT c.name FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o JOIN products p ON p.id = o.product_id WHERE o.customer_id = c.id AND p.category = 'Electronics')",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "List order IDs with the customer's name for orders placed in 2022.",
+   "sql": "SELECT o.id, c.name FROM orders o JOIN customers c ON c.id = o.customer_id WHERE o.order_date LIKE '2022%'",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "How many orders have a quantity greater than 1?",
+   "sql": "SELECT COUNT(*) AS order_count FROM orders WHERE quantity > 1",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "Which customers are based in Mumbai?",
+   "sql": "SELECT name FROM customers WHERE city = 'Mumbai'",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "List product names whose total ordered quantity is greater than 1.",
+   "sql": "SELECT p.name, SUM(o.quantity) AS total_qty FROM orders o JOIN products p ON p.id = o.product_id GROUP BY p.id, p.name HAVING SUM(o.quantity) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "What is the average price of products in the Electronics category?",
+   "sql": "SELECT AVG(price) FROM products WHERE category = 'Electronics'",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "How many enrollments does each student have?",
+   "sql": "SELECT student_id, COUNT(*) AS enrollment_count FROM enrollments GROUP BY student_id",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Show enrollment IDs and scores below 50, lowest score first.",
+   "sql": "SELECT id, score FROM enrollments WHERE score < 50 ORDER BY score ASC",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "What is each student's average enrollment score?",
+   "sql": "SELECT student_id, AVG(score) AS avg_score FROM enrollments GROUP BY student_id",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "How many courses does the Math department offer?",
+   "sql": "SELECT COUNT(*) FROM courses WHERE department = 'Math'",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Find course titles that have at least two enrollments with scores below 60.",
+   "sql": "SELECT c.title FROM courses c JOIN enrollments e ON c.id = e.course_id WHERE e.score < 60 GROUP BY c.id, c.title HAVING COUNT(*) >= 2",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Which students are in grade 11 or higher, sorted by name?",
+   "sql": "SELECT name FROM students WHERE grade_level >= 11 ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "What are the students' names in alphabetical order?",
+   "sql": "SELECT name FROM students ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Which students are in grade 9?",
+   "sql": "SELECT name FROM students WHERE grade_level = 9 ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Show all course titles sorted by credits from highest to lowest.",
+   "sql": "SELECT title FROM courses ORDER BY credits DESC",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "How many total credits does each department offer?",
+   "sql": "SELECT department, SUM(credits) AS total_credits FROM courses GROUP BY department ORDER BY total_credits DESC",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "What is the average enrollment score by course department?",
+   "sql": "SELECT c.department, AVG(e.score) AS avg_score FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.department",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "What is the average enrollment score for each course ID?",
+   "sql": "SELECT course_id, AVG(score) AS average_score FROM enrollments GROUP BY course_id",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Which students have earned more than 5 total credits from their enrollments, and what is that total?",
+   "sql": "SELECT s.name, SUM(c.credits) AS total_credits FROM students s JOIN enrollments e ON s.id = e.student_id JOIN courses c ON c.id = e.course_id GROUP BY s.id, s.name HAVING SUM(c.credits) > 5 ORDER BY total_credits DESC",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "What are the names and ages of students younger than 16?",
+   "sql": "SELECT name, age FROM students WHERE age < 16 ORDER BY age",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Can you list the courses from highest to lowest credit value?",
+   "sql": "SELECT title, credits FROM courses ORDER BY credits DESC",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Show student names and course titles for scores above 85 in Math courses, with the highest scores first.",
+   "sql": "SELECT s.name, c.title, e.score FROM enrollments e JOIN students s ON e.student_id = s.id JOIN courses c ON e.course_id = c.id WHERE e.score > 85 AND c.department = 'Math' ORDER BY e.score DESC",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "For each course, show its title and the number of enrollments, sorted by enrollment count descending.",
+   "sql": "SELECT c.title, COUNT(e.id) AS enrollment_count FROM courses c LEFT JOIN enrollments e ON c.id = e.course_id GROUP BY c.id, c.title ORDER BY enrollment_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Which courses have an average enrollment score above 70?",
+   "sql": "SELECT c.title, AVG(e.score) AS average_score FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.id, c.title HAVING AVG(e.score) > 70",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Which students in grade 10 or higher have an average enrollment score above 70?",
+   "sql": "SELECT s.name, AVG(e.score) AS avg_score FROM students s JOIN enrollments e ON s.id = e.student_id WHERE s.grade_level >= 10 GROUP BY s.id, s.name HAVING AVG(e.score) > 70 ORDER BY avg_score DESC",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "For each student, show their name and average enrollment score, but only students whose average is above 70.",
+   "sql": "SELECT s.name, AVG(e.score) AS average_score FROM students s JOIN enrollments e ON s.id = e.student_id GROUP BY s.id, s.name HAVING AVG(e.score) > 70",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Which courses have at least two enrollment records, and what is their average score?",
+   "sql": "SELECT c.title, AVG(e.score) AS avg_score FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.id, c.title HAVING COUNT(*) >= 2 ORDER BY avg_score DESC",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "List the names of ninth-grade students in alphabetical order.",
+   "sql": "SELECT name FROM students WHERE grade_level = 9 ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "List the five oldest students by age, showing their names and ages.",
+   "sql": "SELECT name, age FROM students ORDER BY age DESC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Which grade level is most common among the students?",
+   "sql": "SELECT grade_level, COUNT(*) AS student_count FROM students GROUP BY grade_level ORDER BY student_count DESC LIMIT 1",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "List students whose enrollment score is higher than the average enrollment score.",
+   "sql": "SELECT s.name FROM students s JOIN enrollments e ON s.id = e.student_id WHERE e.score > (SELECT AVG(score) FROM enrollments)",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "List the course titles and credits for courses that have at least one enrollment, ordered by credits.",
+   "sql": "SELECT DISTINCT c.title, c.credits FROM courses c JOIN enrollments e ON c.id = e.course_id ORDER BY c.credits",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "How many courses are offered in each department?",
+   "sql": "SELECT department, COUNT(*) AS course_count FROM courses GROUP BY department",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "How many courses are worth 3 credits?",
+   "sql": "SELECT COUNT(*) FROM courses WHERE credits = 3",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "How many students are currently in grade 10?",
+   "sql": "SELECT COUNT(*) AS student_count FROM students WHERE grade_level = 10",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "List course titles where every enrollment has a score of at least 50.",
+   "sql": "SELECT c.title FROM courses c WHERE NOT EXISTS (SELECT 1 FROM enrollments e WHERE e.course_id = c.id AND e.score < 50)",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "List students under 16 who have scored above 70, along with the course titles where they did so.",
+   "sql": "SELECT DISTINCT s.name, c.title FROM students s JOIN enrollments e ON s.id = e.student_id JOIN courses c ON c.id = e.course_id WHERE s.age < 16 AND e.score > 70",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Which department has the highest average enrollment score?",
+   "sql": "SELECT c.department, AVG(e.score) AS average_score FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.department ORDER BY average_score DESC LIMIT 1",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "List the course titles in the Math department, ordered by credits from highest to lowest.",
+   "sql": "SELECT title FROM courses WHERE department = 'Math' ORDER BY credits DESC",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Which students are enrolled in at least one Math department course?",
+   "sql": "SELECT DISTINCT s.name FROM students s JOIN enrollments e ON s.id = e.student_id JOIN courses c ON c.id = e.course_id WHERE c.department = 'Math'",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Which student IDs belong to students in grade 11?",
+   "sql": "SELECT id FROM students WHERE grade_level = 11",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Which students have an average enrollment score above 60?",
+   "sql": "SELECT s.name, AVG(e.score) AS avg_score FROM students s JOIN enrollments e ON s.id = e.student_id GROUP BY s.id, s.name HAVING AVG(e.score) > 60",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Among courses with at least one score below 60, which one has the highest average score?",
+   "sql": "SELECT c.title, AVG(e.score) AS avg_score FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.id, c.title HAVING SUM(CASE WHEN e.score < 60 THEN 1 ELSE 0 END) > 0 ORDER BY avg_score DESC LIMIT 1",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Which enrollments have a score below 50?",
+   "sql": "SELECT id, student_id, course_id, score FROM enrollments WHERE score < 50 ORDER BY score",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Show the top five enrollment scores with the student names, highest first.",
+   "sql": "SELECT s.name, e.score FROM students s JOIN enrollments e ON s.id = e.student_id ORDER BY e.score DESC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "What is the highest enrollment score?",
+   "sql": "SELECT MAX(score) AS highest_score FROM enrollments",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Which students scored above 80 in a course, showing student name, course title, and score?",
+   "sql": "SELECT s.name, c.title, e.score FROM students s JOIN enrollments e ON s.id = e.student_id JOIN courses c ON c.id = e.course_id WHERE e.score > 80",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "List student names and enrollment scores for the five highest scores.",
+   "sql": "SELECT s.name, e.score FROM enrollments e JOIN students s ON e.student_id = s.id ORDER BY e.score DESC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Which students are 15 years old?",
+   "sql": "SELECT name FROM students WHERE age = 15",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "What are the names of students older than 14, sorted alphabetically?",
+   "sql": "SELECT name FROM students WHERE age > 14 ORDER BY name ASC",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "What is the average score for each course?",
+   "sql": "SELECT course_id, AVG(score) AS average_score FROM enrollments GROUP BY course_id",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "How many enrollments does each course have? Show the course title and count.",
+   "sql": "SELECT c.title, COUNT(*) AS enrollment_count FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.id, c.title",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Which courses belong to the Math department?",
+   "sql": "SELECT title FROM courses WHERE department = 'Math'",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Which courses have an average enrollment score above 60?",
+   "sql": "SELECT c.title FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.id, c.title HAVING AVG(e.score) > 60",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Which course titles have more than 2 credits, ordered by credits from highest to lowest?",
+   "sql": "SELECT title FROM courses WHERE credits > 2 ORDER BY credits DESC",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "List the different departments that offer courses.",
+   "sql": "SELECT DISTINCT department FROM courses ORDER BY department",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "What is the oldest age in each grade level?",
+   "sql": "SELECT grade_level, MAX(age) AS oldest_age FROM students GROUP BY grade_level",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "How many enrollment records have a score below 50?",
+   "sql": "SELECT COUNT(*) AS low_score_count FROM enrollments WHERE score < 50",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "How many students are currently in grade level 9?",
+   "sql": "SELECT COUNT(*) AS student_count FROM students WHERE grade_level = 9",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Which course has the most credits?",
+   "sql": "SELECT title FROM courses ORDER BY credits DESC LIMIT 1",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Who scored above 80, and in which courses did they do it?",
+   "sql": "SELECT c.title, s.name FROM courses c JOIN enrollments e ON c.id = e.course_id JOIN students s ON s.id = e.student_id WHERE e.score > 80",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "For each department, what is the total number of course credits?",
+   "sql": "SELECT department, SUM(credits) AS total_credits FROM courses GROUP BY department",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "For each grade level, how many students are there?",
+   "sql": "SELECT grade_level, COUNT(*) AS student_count FROM students GROUP BY grade_level",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "List students who scored below the average score in course ID 1, along with their score.",
+   "sql": "SELECT s.name, e.score FROM students s JOIN enrollments e ON s.id = e.student_id WHERE e.course_id = 1 AND e.score < (SELECT AVG(score) FROM enrollments WHERE course_id = 1)",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Which students are enrolled in course 2?",
+   "sql": "SELECT s.name FROM students s JOIN enrollments e ON s.id = e.student_id WHERE e.course_id = 2",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Which course titles are worth at least 3 credits?",
+   "sql": "SELECT title FROM courses WHERE credits >= 3 ORDER BY title",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Which student got the single highest enrollment score, and what was it?",
+   "sql": "SELECT s.name, e.score FROM students s JOIN enrollments e ON s.id = e.student_id WHERE e.score = (SELECT MAX(score) FROM enrollments)",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "How many courses are in the Math department?",
+   "sql": "SELECT COUNT(*) AS math_course_count FROM courses WHERE department = 'Math'",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "For each course, show the title and the number of enrollment scores of at least 80, but only for courses with at least one such score.",
+   "sql": "SELECT c.title, COUNT(e.id) AS high_score_count FROM courses c JOIN enrollments e ON c.id = e.course_id WHERE e.score >= 80 GROUP BY c.id, c.title HAVING COUNT(e.id) >= 1",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "How many enrollment records does each course have?",
+   "sql": "SELECT c.title, COUNT(e.id) AS enrollment_count FROM courses c LEFT JOIN enrollments e ON c.id = e.course_id GROUP BY c.id, c.title ORDER BY enrollment_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Show enrollment IDs and scores for scores above 80, highest score first.",
+   "sql": "SELECT id, score FROM enrollments WHERE score > 80 ORDER BY score DESC",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "What is the highest enrollment score for each course? Show the course title and maximum score.",
+   "sql": "SELECT c.title, MAX(e.score) AS highest_score FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.id, c.title",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "What is the average age of all students?",
+   "sql": "SELECT AVG(age) FROM students",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "For each department with more than one enrollment, how many distinct students are enrolled?",
+   "sql": "SELECT c.department, COUNT(DISTINCT e.student_id) AS student_count FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.department HAVING COUNT(*) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Which three courses have the most credits?",
+   "sql": "SELECT title, credits FROM courses ORDER BY credits DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Show each course title along with the average score of its enrollments.",
+   "sql": "SELECT c.title, AVG(e.score) AS average_score FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.id, c.title",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Show the five highest enrollment scores with student and course IDs.",
+   "sql": "SELECT student_id, course_id, score FROM enrollments ORDER BY score DESC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Show enrollments with scores below 50, ordered by score.",
+   "sql": "SELECT id, student_id, course_id, score FROM enrollments WHERE score < 50 ORDER BY score",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "What is the average enrollment score for each course that has enrollments?",
+   "sql": "SELECT c.title, AVG(e.score) AS avg_score FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.id, c.title ORDER BY avg_score DESC",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "What course titles are offered by the Math department?",
+   "sql": "SELECT title FROM courses WHERE department = 'Math'",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "What is the average enrollment score for each student who has enrollments?",
+   "sql": "SELECT s.name, AVG(e.score) AS average_score FROM students s JOIN enrollments e ON s.id = e.student_id GROUP BY s.id, s.name ORDER BY average_score DESC",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Which students have names starting with M?",
+   "sql": "SELECT name FROM students WHERE name LIKE 'M%'",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Which courses have an average enrollment score above 75? Show the course title and average score.",
+   "sql": "SELECT c.title, AVG(e.score) AS average_score FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.id, c.title HAVING AVG(e.score) > 75",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Which enrollment has the highest score?",
+   "sql": "SELECT id, score FROM enrollments ORDER BY score DESC LIMIT 1",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "List every student's name and how many enrollments they have, including students with none.",
+   "sql": "SELECT s.name, COUNT(e.id) AS enrollment_count FROM students s LEFT JOIN enrollments e ON s.id = e.student_id GROUP BY s.id, s.name",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Show each enrollment score with the student's grade level, sorted by score descending, limited to 4 rows.",
+   "sql": "SELECT s.grade_level, e.score FROM enrollments e JOIN students s ON e.student_id = s.id ORDER BY e.score DESC LIMIT 4",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Which students are younger than 16, and how old are they?",
+   "sql": "SELECT name, age FROM students WHERE age < 16 ORDER BY age",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "For which grade levels are there more than one student, and what are the student count and average age?",
+   "sql": "SELECT grade_level, COUNT(*) AS student_count, AVG(age) AS average_age FROM students GROUP BY grade_level HAVING COUNT(*) > 1 ORDER BY grade_level",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "What are the names of students younger than 16, oldest first?",
+   "sql": "SELECT name FROM students WHERE age < 16 ORDER BY age DESC",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Find students enrolled in a Math course with a score below 60.",
+   "sql": "SELECT DISTINCT s.name FROM students s JOIN enrollments e ON s.id = e.student_id JOIN courses c ON e.course_id = c.id WHERE c.department = 'Math' AND e.score < 60",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "How many students are enrolled in each course title?",
+   "sql": "SELECT c.id, c.title, COUNT(*) AS enrollment_count FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.id, c.title",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "How many students are in grade level 11?",
+   "sql": "SELECT COUNT(*) FROM students WHERE grade_level = 11",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "List student names and course titles for enrollments with scores above 80.",
+   "sql": "SELECT s.name, c.title FROM students s JOIN enrollments e ON s.id = e.student_id JOIN courses c ON e.course_id = c.id WHERE e.score > 80",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Which students have scored above 80 on at least one enrollment?",
+   "sql": "SELECT DISTINCT s.name FROM students s JOIN enrollments e ON s.id = e.student_id WHERE e.score > 80",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "List students who are not enrolled in any course.",
+   "sql": "SELECT s.name FROM students s WHERE NOT EXISTS (SELECT 1 FROM enrollments e WHERE e.student_id = s.id)",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Which students have enrolled in a course worth 4 credits? Show distinct student names.",
+   "sql": "SELECT DISTINCT s.name FROM students s JOIN enrollments e ON s.id = e.student_id JOIN courses c ON e.course_id = c.id WHERE c.credits = 4",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "List the titles of courses worth 4 credits, alphabetically.",
+   "sql": "SELECT title FROM courses WHERE credits = 4 ORDER BY title",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Show student names and the number of courses they are enrolled in, including students with none, ordered by count descending.",
+   "sql": "SELECT s.name, COUNT(e.id) AS course_count FROM students s LEFT JOIN enrollments e ON s.id = e.student_id GROUP BY s.id, s.name ORDER BY course_count DESC",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "How many students are there?",
+   "sql": "SELECT COUNT(*) AS student_count FROM students",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Which students are enrolled in both Algebra and Geometry?",
+   "sql": "SELECT s.name FROM students s WHERE EXISTS (SELECT 1 FROM enrollments e JOIN courses c ON c.id = e.course_id WHERE e.student_id = s.id AND c.title = 'Algebra') AND EXISTS (SELECT 1 FROM enrollments e JOIN courses c ON c.id = e.course_id WHERE e.student_id = s.id AND c.title = 'Geometry') ORDER BY s.name",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "List students and their grade levels for students who are enrolled in any course, sorted by name.",
+   "sql": "SELECT DISTINCT s.name, s.grade_level FROM students s JOIN enrollments e ON s.id = e.student_id ORDER BY s.name",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "For each course, how many enrollments are there, including courses with none?",
+   "sql": "SELECT c.title, COUNT(e.id) AS enrollment_count FROM courses c LEFT JOIN enrollments e ON c.id = e.course_id GROUP BY c.id, c.title",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "What is the average enrollment score overall?",
+   "sql": "SELECT AVG(score) AS average_score FROM enrollments",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "How many courses are there in each department?",
+   "sql": "SELECT department, COUNT(*) AS course_count FROM courses GROUP BY department",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "For each genre, how many books are there? Show the largest counts first.",
+   "sql": "SELECT genre, COUNT(*) AS book_count FROM books GROUP BY genre ORDER BY book_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Count the loans for each member and show members with the most loans first.",
+   "sql": "SELECT member_name, COUNT(*) AS loan_count FROM loans GROUP BY member_name ORDER BY loan_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "How many loans are still out, meaning they have not been returned?",
+   "sql": "SELECT COUNT(*) FROM loans WHERE returned = 0",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Show genres whose books have a combined page count over 500, with total and average pages.",
+   "sql": "SELECT genre, SUM(pages) AS total_pages, AVG(pages) AS average_pages FROM books GROUP BY genre HAVING SUM(pages) > 500",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "What are the five longest books by page count?",
+   "sql": "SELECT title, pages FROM books ORDER BY pages DESC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "List all authors in alphabetical order by name.",
+   "sql": "SELECT name FROM authors ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "List the member names along with the titles of the books they borrowed.",
+   "sql": "SELECT l.member_name, b.title FROM loans l JOIN books b ON l.book_id = b.id",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "For each loan, show the member name, book title, and loan date, ordered by loan date.",
+   "sql": "SELECT l.member_name, b.title, l.loan_date FROM loans l JOIN books b ON l.book_id = b.id ORDER BY l.loan_date",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Which authors are from India or Spain?",
+   "sql": "SELECT name, country FROM authors WHERE country IN ('India', 'Spain')",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "For each country, show the number of authors and the average publication year of their books, but only include countries with more than one book.",
+   "sql": "SELECT a.country, COUNT(DISTINCT a.id) AS author_count, AVG(b.year) AS avg_year FROM authors a JOIN books b ON b.author_id = a.id GROUP BY a.country HAVING COUNT(b.id) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Which authors have 'Tanaka' in their name?",
+   "sql": "SELECT name, country FROM authors WHERE name LIKE '%Tanaka%'",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "What is the average number of pages per genre?",
+   "sql": "SELECT genre, AVG(pages) AS average_pages FROM books GROUP BY genre",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Show the titles of books that are either Mystery or Fantasy, ordered by publication year.",
+   "sql": "SELECT title FROM books WHERE genre IN ('Mystery', 'Fantasy') ORDER BY year",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "What is the earliest year in which any book was published?",
+   "sql": "SELECT MIN(year) FROM books",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Which author has written the most books? Show the author name and the book count.",
+   "sql": "SELECT a.name, COUNT(b.id) AS book_count FROM authors a JOIN books b ON a.id = b.author_id GROUP BY a.id, a.name HAVING COUNT(b.id) = (SELECT MAX(book_total) FROM (SELECT COUNT(*) AS book_total FROM books GROUP BY author_id))",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "How many books has each author written? Include author names and order by the count descending.",
+   "sql": "SELECT a.name, COUNT(b.id) AS book_count FROM authors a LEFT JOIN books b ON a.id = b.author_id GROUP BY a.id, a.name ORDER BY book_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Which books have been loaned more than once?",
+   "sql": "SELECT b.title, COUNT(*) AS loan_count FROM books b JOIN loans l ON b.id = l.book_id GROUP BY b.id, b.title HAVING COUNT(*) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Which members have returned every loan they have taken out?",
+   "sql": "SELECT member_name FROM loans GROUP BY member_name HAVING COUNT(*) > 0 AND SUM(CASE WHEN returned = 1 THEN 1 ELSE 0 END) = COUNT(*)",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Show the five longest books by page count, including title, genre, and pages.",
+   "sql": "SELECT title, genre, pages FROM books ORDER BY pages DESC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "How many books were published before 1960?",
+   "sql": "SELECT COUNT(*) FROM books WHERE year < 1960",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Which books have been borrowed, and what genre are they? List each loan with the book title and genre.",
+   "sql": "SELECT l.id AS loan_id, b.title, b.genre FROM loans l JOIN books b ON l.book_id = b.id",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "List book titles that have more than 400 pages.",
+   "sql": "SELECT title FROM books WHERE pages > 400",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Show member names and loan dates for loans made during 2023, sorted by loan date.",
+   "sql": "SELECT member_name, loan_date FROM loans WHERE loan_date >= '2023-01-01' AND loan_date < '2024-01-01' ORDER BY loan_date",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "How many authors are from India?",
+   "sql": "SELECT COUNT(*) FROM authors WHERE country = 'India'",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Show the title and author name for the book with the most pages.",
+   "sql": "SELECT b.title, a.name FROM books b JOIN authors a ON b.author_id = a.id WHERE b.pages = (SELECT MAX(pages) FROM books)",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "List titles of Mystery or History books whose authors are from Norway or Spain.",
+   "sql": "SELECT b.title FROM books b JOIN authors a ON b.author_id = a.id WHERE a.country IN ('Norway', 'Spain') AND b.genre IN ('Mystery', 'History')",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Which authors have a pre-1990 book that has been borrowed at least once?",
+   "sql": "SELECT DISTINCT a.name FROM authors a JOIN books b ON b.author_id = a.id JOIN loans l ON l.book_id = b.id WHERE b.year < 1990",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "List book titles longer than 300 pages in alphabetical order.",
+   "sql": "SELECT title FROM books WHERE pages > 300 ORDER BY title",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "List the titles of books that have been borrowed and returned at least once.",
+   "sql": "SELECT DISTINCT b.title FROM loans l JOIN books b ON l.book_id = b.id WHERE l.returned = 1",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "How many books have more than 300 pages?",
+   "sql": "SELECT COUNT(*) FROM books WHERE pages > 300",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Which members have borrowed and returned a Fantasy or Mystery book by an author not from Spain?",
+   "sql": "SELECT DISTINCT l.member_name FROM loans l JOIN books b ON l.book_id = b.id JOIN authors a ON b.author_id = a.id WHERE b.genre IN ('Fantasy', 'Mystery') AND l.returned = 1 AND a.country <> 'Spain'",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "List titles of books written by authors from Norway.",
+   "sql": "SELECT b.title FROM books b JOIN authors a ON b.author_id = a.id WHERE a.country = 'Norway'",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Which members have borrowed books from more than one genre?",
+   "sql": "SELECT l.member_name FROM loans l JOIN books b ON l.book_id = b.id GROUP BY l.member_name HAVING COUNT(DISTINCT b.genre) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "What is the total page count for all Fantasy and Mystery books together?",
+   "sql": "SELECT SUM(pages) FROM books WHERE genre IN ('Fantasy', 'Mystery')",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Find authors who have at least two books and whose books have an average page count above 250, showing the author and average pages.",
+   "sql": "SELECT a.name, AVG(b.pages) AS avg_pages FROM authors a JOIN books b ON b.author_id = a.id GROUP BY a.id, a.name HAVING COUNT(b.id) >= 2 AND AVG(b.pages) > 250",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Which member names appear on loans that have already been returned?",
+   "sql": "SELECT DISTINCT member_name FROM loans WHERE returned = 1 ORDER BY member_name",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "How many books are in the Fantasy genre?",
+   "sql": "SELECT COUNT(*) FROM books WHERE genre = 'Fantasy'",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Which authors have written no books in this database?",
+   "sql": "SELECT a.name FROM authors a WHERE NOT EXISTS (SELECT 1 FROM books b WHERE b.author_id = a.id)",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Find the titles of books by authors from India or Spain.",
+   "sql": "SELECT b.title FROM books b JOIN authors a ON b.author_id = a.id WHERE a.country IN ('India', 'Spain')",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "List all book titles with more than 300 pages, sorted from longest to shortest.",
+   "sql": "SELECT title, pages FROM books WHERE pages > 300 ORDER BY pages DESC",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Which authors come from Norway?",
+   "sql": "SELECT name FROM authors WHERE country = 'Norway'",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Which members have borrowed more than two books, and how many loans do they have?",
+   "sql": "SELECT member_name, COUNT(*) AS loan_count FROM loans GROUP BY member_name HAVING COUNT(*) > 2",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "List the titles of books published before 1960, oldest first.",
+   "sql": "SELECT title FROM books WHERE year < 1960 ORDER BY year ASC",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "How many loans has each member taken out, from most to least?",
+   "sql": "SELECT member_name, COUNT(*) AS loan_count FROM loans GROUP BY member_name ORDER BY loan_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Which authors have written more than one book? Show the author name and number of books.",
+   "sql": "SELECT a.name, COUNT(b.id) AS book_count FROM authors a JOIN books b ON b.author_id = a.id GROUP BY a.id, a.name HAVING COUNT(b.id) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Which authors come from Norway, listed alphabetically by name?",
+   "sql": "SELECT name FROM authors WHERE country = 'Norway' ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "What are the names and countries of authors whose names start with A?",
+   "sql": "SELECT name, country FROM authors WHERE name LIKE 'A%'",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "List member names who have borrowed more than one book, along with their loan counts.",
+   "sql": "SELECT member_name, COUNT(*) AS loan_count FROM loans GROUP BY member_name HAVING COUNT(*) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "For genres whose borrowed books average more than 250 pages, what is the average page count?",
+   "sql": "SELECT b.genre, AVG(b.pages) AS avg_pages FROM books b JOIN loans l ON l.book_id = b.id GROUP BY b.genre HAVING AVG(b.pages) > 250",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "List books published between 1980 and 2000 with their author names, sorted by year.",
+   "sql": "SELECT b.title, a.name, b.year FROM books b JOIN authors a ON b.author_id = a.id WHERE b.year BETWEEN 1980 AND 2000 ORDER BY b.year",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Which book titles has Maya Tanaka borrowed?",
+   "sql": "SELECT b.title FROM loans l JOIN books b ON l.book_id = b.id WHERE l.member_name = 'Maya Tanaka'",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "List the book IDs and loan dates for returned loans to Maya Tanaka.",
+   "sql": "SELECT book_id, loan_date FROM loans WHERE member_name = 'Maya Tanaka' AND returned = 1",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Which authors have an average book length above 350 pages? Show the author name and average page count.",
+   "sql": "SELECT a.name, AVG(b.pages) AS avg_pages FROM authors a JOIN books b ON a.id = b.author_id GROUP BY a.id, a.name HAVING AVG(b.pages) > 350",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "List the authors who are from Norway.",
+   "sql": "SELECT name FROM authors WHERE country = 'Norway'",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Which book titles have never been included in a loan?",
+   "sql": "SELECT b.title FROM books b WHERE NOT EXISTS (SELECT 1 FROM loans l WHERE l.book_id = b.id)",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "List member names who have borrowed a Fantasy book.",
+   "sql": "SELECT DISTINCT l.member_name FROM loans l JOIN books b ON l.book_id = b.id WHERE b.genre = 'Fantasy'",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Which loan records belong to members whose names start with M?",
+   "sql": "SELECT id, member_name FROM loans WHERE member_name LIKE 'M%'",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Count the books written by authors from each country.",
+   "sql": "SELECT a.country, COUNT(*) AS book_count FROM books b JOIN authors a ON b.author_id = a.id GROUP BY a.country",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Show member names and book titles for loans of Fantasy books.",
+   "sql": "SELECT l.member_name, b.title FROM loans l JOIN books b ON l.book_id = b.id WHERE b.genre = 'Fantasy'",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Find the average number of pages for History books.",
+   "sql": "SELECT AVG(pages) FROM books WHERE genre = 'History'",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "What is the average page count for each genre?",
+   "sql": "SELECT genre, AVG(pages) AS average_pages FROM books GROUP BY genre",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Show each book title together with the name of its author.",
+   "sql": "SELECT b.title, a.name AS author_name FROM books b JOIN authors a ON b.author_id = a.id",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Show the three most recently published books with their authors' names.",
+   "sql": "SELECT b.title, b.year, a.name FROM books b JOIN authors a ON b.author_id = a.id ORDER BY b.year DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Which books have never been loaned?",
+   "sql": "SELECT title FROM books b WHERE NOT EXISTS (SELECT 1 FROM loans l WHERE l.book_id = b.id)",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "List loans where the book was written by an author from India, showing member name, book title, and author name.",
+   "sql": "SELECT l.member_name, b.title, a.name AS author_name FROM loans l JOIN books b ON l.book_id = b.id JOIN authors a ON b.author_id = a.id WHERE a.country = 'India'",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "What History books are in the library, longest first?",
+   "sql": "SELECT title, pages FROM books WHERE genre = 'History' ORDER BY pages DESC",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "List books published in 1980 or later together with their author's country.",
+   "sql": "SELECT b.title, a.country FROM books b JOIN authors a ON b.author_id = a.id WHERE b.year >= 1980 ORDER BY b.year",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "How many books has each author written, including authors with no books?",
+   "sql": "SELECT a.name, COUNT(b.id) AS book_count FROM authors a LEFT JOIN books b ON a.id = b.author_id GROUP BY a.id, a.name",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Show the titles of books published after 1980, oldest first.",
+   "sql": "SELECT title FROM books WHERE year > 1980 ORDER BY year ASC",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "What was each member's most recent loan date?",
+   "sql": "SELECT member_name, MAX(loan_date) AS latest_loan FROM loans GROUP BY member_name ORDER BY latest_loan DESC",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Show each author's name, country, and total pages of their books, but only for authors with at least 300 total pages.",
+   "sql": "SELECT a.name, a.country, SUM(b.pages) AS total_pages FROM authors a JOIN books b ON b.author_id = a.id GROUP BY a.id, a.name, a.country HAVING SUM(b.pages) >= 300",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "List the names of authors who have at least one book recorded.",
+   "sql": "SELECT DISTINCT a.name FROM authors a JOIN books b ON a.id = b.author_id",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Which books are longer than the average book in the database?",
+   "sql": "SELECT title, pages FROM books WHERE pages > (SELECT AVG(pages) FROM books)",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Show each loan record sorted by loan date with the most recent first.",
+   "sql": "SELECT id, member_name, loan_date FROM loans ORDER BY loan_date DESC",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Which authors have at least one book that has been loaned? Show each author once.",
+   "sql": "SELECT DISTINCT a.name FROM authors a JOIN books b ON b.author_id = a.id JOIN loans l ON l.book_id = b.id",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Which members have borrowed a Fantasy book written by Lucas Tanaka?",
+   "sql": "SELECT DISTINCT l.member_name FROM loans l JOIN books b ON l.book_id = b.id JOIN authors a ON b.author_id = a.id WHERE a.name = 'Lucas Tanaka' AND b.genre = 'Fantasy'",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "List authors who have written more than one book.",
+   "sql": "SELECT a.name FROM authors a JOIN books b ON b.author_id = a.id GROUP BY a.id, a.name HAVING COUNT(b.id) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "List book titles with their author names for books published before 1990.",
+   "sql": "SELECT b.title, a.name FROM books b JOIN authors a ON b.author_id = a.id WHERE b.year < 1990",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Show the three most recent loans with the member name and loan date.",
+   "sql": "SELECT member_name, loan_date FROM loans ORDER BY loan_date DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "For each author, show the author name and how many loans their books have had, including authors with zero loans.",
+   "sql": "SELECT a.name, COUNT(l.id) AS loan_count FROM authors a LEFT JOIN books b ON a.id = b.author_id LEFT JOIN loans l ON b.id = l.book_id GROUP BY a.id, a.name",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "How many books are there in each genre?",
+   "sql": "SELECT genre, COUNT(*) AS book_count FROM books GROUP BY genre ORDER BY book_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Show loans recorded during 2024, ordered by loan date.",
+   "sql": "SELECT member_name, loan_date FROM loans WHERE loan_date BETWEEN '2024-01-01' AND '2024-12-31' ORDER BY loan_date",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "What are the five longest books, with their page counts?",
+   "sql": "SELECT title, pages FROM books ORDER BY pages DESC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Which member borrowed the most recent loan?",
+   "sql": "SELECT member_name FROM loans ORDER BY loan_date DESC LIMIT 1",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Show the number of returned loans for each member.",
+   "sql": "SELECT member_name, COUNT(*) AS returned_loans FROM loans WHERE returned = 1 GROUP BY member_name",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "For every book, show its title alongside the author's name, sorted by title.",
+   "sql": "SELECT b.title, a.name FROM books b JOIN authors a ON b.author_id = a.id ORDER BY b.title",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Which book titles have never been loaned?",
+   "sql": "SELECT b.title FROM books b LEFT JOIN loans l ON b.id = l.book_id WHERE l.id IS NULL",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "List the titles of fantasy books published after 1980 in alphabetical order.",
+   "sql": "SELECT title FROM books WHERE genre = 'Fantasy' AND year > 1980 ORDER BY title",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Find genres whose average page count is higher than the average page count of all books.",
+   "sql": "SELECT genre, AVG(pages) AS avg_pages FROM books GROUP BY genre HAVING AVG(pages) > (SELECT AVG(pages) FROM books)",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "How many loans were made before January 1, 2023?",
+   "sql": "SELECT COUNT(*) AS loan_count FROM loans WHERE loan_date < '2023-01-01'",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "How many authors are recorded in the database?",
+   "sql": "SELECT COUNT(*) AS author_count FROM authors",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "For each genre that has at least one loan, how many loans are there?",
+   "sql": "SELECT b.genre, COUNT(l.id) AS loan_count FROM books b JOIN loans l ON b.id = l.book_id GROUP BY b.genre HAVING COUNT(l.id) > 0",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "For each author, show the total page count of their books, but only for authors whose books total more than 500 pages.",
+   "sql": "SELECT a.name, SUM(b.pages) AS total_pages FROM authors a JOIN books b ON b.author_id = a.id GROUP BY a.id, a.name HAVING SUM(b.pages) > 500",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Which authors have published at least one book before 1980 and at least one after 2000?",
+   "sql": "SELECT a.name FROM authors a WHERE EXISTS (SELECT 1 FROM books b WHERE b.author_id = a.id AND b.year < 1980) AND EXISTS (SELECT 1 FROM books b WHERE b.author_id = a.id AND b.year > 2000)",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Which book titles were published after 1990? Show them in alphabetical order.",
+   "sql": "SELECT title FROM books WHERE year > 1990 ORDER BY title",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Which members have borrowed the most books? Show member name and loan count, highest first.",
+   "sql": "SELECT member_name, COUNT(*) AS loan_count FROM loans GROUP BY member_name ORDER BY loan_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Show each genre and the number of books in it.",
+   "sql": "SELECT genre, COUNT(*) AS book_count FROM books GROUP BY genre",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Which loans have not been returned yet?",
+   "sql": "SELECT id, book_id, member_name FROM loans WHERE returned = 0",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "How many Mystery books are in the database?",
+   "sql": "SELECT COUNT(*) AS mystery_count FROM books WHERE genre = 'Mystery'",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Which members have borrowed more than one book? Show their names and loan counts.",
+   "sql": "SELECT member_name, COUNT(*) AS loan_count FROM loans GROUP BY member_name HAVING COUNT(*) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Show the five longest books by page count, including title and pages.",
+   "sql": "SELECT title, pages FROM books ORDER BY pages DESC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Which authors have had at least two books borrowed?",
+   "sql": "SELECT a.name FROM authors a JOIN books b ON b.author_id = a.id JOIN loans l ON l.book_id = b.id GROUP BY a.id, a.name HAVING COUNT(l.id) >= 2",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Find book titles that have never been loaned.",
+   "sql": "SELECT b.title FROM books b LEFT JOIN loans l ON l.book_id = b.id WHERE l.id IS NULL",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Which books are longer than the average book in the library?",
+   "sql": "SELECT title, pages FROM books WHERE pages > (SELECT AVG(pages) FROM books) ORDER BY pages DESC",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "What are the names of authors from Spain?",
+   "sql": "SELECT name FROM authors WHERE country = 'Spain'",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "List each author's name and how many books they have written.",
+   "sql": "SELECT a.name, COUNT(b.id) AS book_count FROM authors a LEFT JOIN books b ON b.author_id = a.id GROUP BY a.id, a.name",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "How many appointments has each doctor handled?",
+   "sql": "SELECT d.name, COUNT(*) AS appointment_count FROM appointments a JOIN doctors d ON d.id = a.doctor_id GROUP BY d.id",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Show doctors whose average appointment fee is above the overall average fee.",
+   "sql": "SELECT d.name, AVG(a.fee) AS avg_fee FROM doctors d JOIN appointments a ON a.doctor_id = d.id GROUP BY d.id, d.name HAVING AVG(a.fee) > (SELECT AVG(fee) FROM appointments)",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "How many appointments has each patient had?",
+   "sql": "SELECT p.name, COUNT(a.id) AS appointment_count FROM patients p LEFT JOIN appointments a ON a.patient_id = p.id GROUP BY p.id, p.name ORDER BY appointment_count DESC, p.name",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "How much in appointment fees has each patient city generated in total?",
+   "sql": "SELECT p.city, SUM(a.fee) AS total_fees FROM appointments a JOIN patients p ON p.id = a.patient_id GROUP BY p.city ORDER BY total_fees DESC",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Which patients have had an appointment that cost more than the average appointment fee?",
+   "sql": "SELECT DISTINCT p.name FROM patients p JOIN appointments a ON p.id = a.patient_id WHERE a.fee > (SELECT AVG(fee) FROM appointments)",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "How many appointments were charged more than 100?",
+   "sql": "SELECT COUNT(*) FROM appointments WHERE fee > 100",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Who is the doctor with the highest number of appointments, and how many do they have?",
+   "sql": "SELECT d.name, (SELECT COUNT(*) FROM appointments a WHERE a.doctor_id = d.id) AS appointment_count FROM doctors d ORDER BY appointment_count DESC LIMIT 1",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "Show the dates and doctor names for appointments handled by orthopedic doctors.",
+   "sql": "SELECT a.date, d.name FROM appointments a JOIN doctors d ON a.doctor_id = d.id WHERE d.specialty = 'Orthopedics'",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "List patients from Lisbon by age from oldest to youngest.",
+   "sql": "SELECT name, age FROM patients WHERE city = 'Lisbon' ORDER BY age DESC",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "For doctors with at least two appointments and an average fee over 75, show the doctor's name, appointment count, total fees, and average fee.",
+   "sql": "SELECT d.name, COUNT(a.id) AS appointment_count, SUM(a.fee) AS total_fees, AVG(a.fee) AS average_fee FROM doctors d JOIN appointments a ON d.id = a.doctor_id GROUP BY d.id, d.name HAVING COUNT(a.id) >= 2 AND AVG(a.fee) > 75",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "What's the latest appointment date we have on record?",
+   "sql": "SELECT MAX(date) FROM appointments",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Show each patient's name and how many appointments they have booked.",
+   "sql": "SELECT p.name, COUNT(a.id) AS appointment_count FROM patients p JOIN appointments a ON p.id = a.patient_id GROUP BY p.id, p.name",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "What is the average appointment fee for each doctor ID?",
+   "sql": "SELECT doctor_id, AVG(fee) AS avg_fee FROM appointments GROUP BY doctor_id",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Which two appointments cost the most, and who were the doctors?",
+   "sql": "SELECT a.id, a.fee, d.name AS doctor_name FROM appointments a JOIN doctors d ON a.doctor_id = d.id ORDER BY a.fee DESC LIMIT 2",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Show appointments under 100 in fee, starting with the cheapest.",
+   "sql": "SELECT id, date, fee FROM appointments WHERE fee < 100 ORDER BY fee ASC",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "How many appointments has each doctor had?",
+   "sql": "SELECT doctor_id, COUNT(*) AS appointment_count FROM appointments GROUP BY doctor_id",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Which patients have never booked an appointment?",
+   "sql": "SELECT name FROM patients WHERE id NOT IN (SELECT patient_id FROM appointments)",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "Who is our most experienced doctor?",
+   "sql": "SELECT name, years_experience FROM doctors ORDER BY years_experience DESC LIMIT 1",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "What are the five most expensive appointments, with their dates?",
+   "sql": "SELECT id, date, fee FROM appointments ORDER BY fee DESC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "How many patients are there per city, starting with the city that has the most?",
+   "sql": "SELECT city, COUNT(*) AS patient_count FROM patients GROUP BY city ORDER BY patient_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Which patients have had appointments with a doctor who has more than 20 years of experience?",
+   "sql": "SELECT DISTINCT p.name FROM patients p JOIN appointments a ON a.patient_id = p.id JOIN doctors d ON d.id = a.doctor_id WHERE d.years_experience > 20",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "How many appointments took place during 2024?",
+   "sql": "SELECT COUNT(*) FROM appointments WHERE date BETWEEN '2024-01-01' AND '2024-12-31'",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Which patients have seen both a dermatology doctor and an orthopedics doctor?",
+   "sql": "SELECT p.name FROM patients p JOIN appointments a ON p.id = a.patient_id JOIN doctors d ON a.doctor_id = d.id WHERE d.specialty IN ('Dermatology', 'Orthopedics') GROUP BY p.id, p.name HAVING COUNT(DISTINCT d.specialty) = 2",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors have an average appointment fee above 100?",
+   "sql": "SELECT d.name, AVG(a.fee) AS average_fee FROM doctors d JOIN appointments a ON d.id = a.doctor_id GROUP BY d.id, d.name HAVING AVG(a.fee) > 100",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "Show me the appointments that cost more than $100, cheapest one first.",
+   "sql": "SELECT id, date, fee FROM appointments WHERE fee > 100 ORDER BY fee ASC",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "What is the average appointment fee per doctor, highest average first?",
+   "sql": "SELECT doctor_id, AVG(fee) AS average_fee FROM appointments GROUP BY doctor_id ORDER BY average_fee DESC",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "For each patient, show the date and fee of their most recent appointment.",
+   "sql": "SELECT p.name, a.date, a.fee FROM patients p JOIN appointments a ON p.id = a.patient_id WHERE a.date = (SELECT MAX(a2.date) FROM appointments a2 WHERE a2.patient_id = p.id)",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "Find patients whose name begins with Lucas.",
+   "sql": "SELECT name, age, city FROM patients WHERE name LIKE 'Lucas%'",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "List the five oldest patients with their cities.",
+   "sql": "SELECT name, age, city FROM patients ORDER BY age DESC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Which patients have paid more than the average appointment fee?",
+   "sql": "SELECT DISTINCT p.name FROM patients p JOIN appointments a ON a.patient_id = p.id WHERE a.fee > (SELECT AVG(fee) FROM appointments)",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "For each doctor, what is the latest appointment date?",
+   "sql": "SELECT d.name, MAX(a.date) AS latest_date FROM doctors d JOIN appointments a ON a.doctor_id = d.id GROUP BY d.id, d.name ORDER BY latest_date DESC",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Which patients are over 70 years old, oldest first?",
+   "sql": "SELECT name, age FROM patients WHERE age > 70 ORDER BY age DESC",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Can you list the patients from Lisbon, oldest first?",
+   "sql": "SELECT name, age FROM patients WHERE city = 'Lisbon' ORDER BY age DESC",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors have been practicing for more than 20 years?",
+   "sql": "SELECT name FROM doctors WHERE years_experience > 20",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Which specialty brings in the highest average appointment fee?",
+   "sql": "SELECT d.specialty, AVG(a.fee) AS avg_fee FROM appointments a JOIN doctors d ON d.id = a.doctor_id GROUP BY d.specialty ORDER BY avg_fee DESC LIMIT 1",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Which dermatologists are in the database, and how many years of experience do they have?",
+   "sql": "SELECT name, years_experience FROM doctors WHERE specialty = 'Dermatology'",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Which appointments were with doctors in Pediatrics?",
+   "sql": "SELECT a.id, a.date, d.name FROM appointments a JOIN doctors d ON d.id = a.doctor_id WHERE d.specialty = 'Pediatrics'",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "How many appointments has each doctor handled, including doctors with none?",
+   "sql": "SELECT d.name, COUNT(a.id) AS appointment_count FROM doctors d LEFT JOIN appointments a ON d.id = a.doctor_id GROUP BY d.id, d.name",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "How many appointments were booked during 2024?",
+   "sql": "SELECT COUNT(*) FROM appointments WHERE date LIKE '2024%'",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "What are the names of patients under 60?",
+   "sql": "SELECT name FROM patients WHERE age < 60 ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Which three patients have the most appointments?",
+   "sql": "SELECT patient_id, COUNT(*) AS appointment_count FROM appointments GROUP BY patient_id ORDER BY appointment_count DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "How many appointments took place in each calendar year?",
+   "sql": "SELECT strftime('%Y', date) AS yr, COUNT(*) AS n FROM appointments GROUP BY yr ORDER BY yr",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Which dermatology doctors are on staff, with the most experienced listed first?",
+   "sql": "SELECT name FROM doctors WHERE specialty = 'Dermatology' ORDER BY years_experience DESC",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "How many doctors are there in each specialty?",
+   "sql": "SELECT specialty, COUNT(*) AS doctor_count FROM doctors GROUP BY specialty",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "What is the average appointment fee by doctor?",
+   "sql": "SELECT d.name, AVG(a.fee) AS avg_fee FROM doctors d JOIN appointments a ON a.doctor_id = d.id GROUP BY d.id, d.name ORDER BY avg_fee DESC",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "List patients younger than 50 in alphabetical order.",
+   "sql": "SELECT name, age FROM patients WHERE age < 50 ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "What distinct patient cities are recorded, in alphabetical order?",
+   "sql": "SELECT DISTINCT city FROM patients ORDER BY city",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Which three patients have booked the most appointments?",
+   "sql": "SELECT p.name, COUNT(*) AS n FROM appointments a JOIN patients p ON p.id = a.patient_id GROUP BY p.id ORDER BY n DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "List doctors who have fewer than 10 years of experience.",
+   "sql": "SELECT name, years_experience FROM doctors WHERE years_experience < 10",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "How many patients are registered from Toronto?",
+   "sql": "SELECT COUNT(*) FROM patients WHERE city = 'Toronto'",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Which appointments were charged more than the average fee for that doctor's specialty?",
+   "sql": "SELECT a.id, a.fee FROM appointments a JOIN doctors d ON d.id = a.doctor_id WHERE a.fee > (SELECT AVG(a2.fee) FROM appointments a2 JOIN doctors d2 ON d2.id = a2.doctor_id WHERE d2.specialty = d.specialty)",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "What is the average age of our patients in each city?",
+   "sql": "SELECT city, AVG(age) AS avg_age FROM patients GROUP BY city",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors specialize in Dermatology?",
+   "sql": "SELECT name FROM doctors WHERE specialty = 'Dermatology'",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "What distinct cities do the patients come from?",
+   "sql": "SELECT DISTINCT city FROM patients",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Show appointments for patients over 60, including the patient's name.",
+   "sql": "SELECT a.id, a.date, p.name AS patient_name FROM appointments a JOIN patients p ON a.patient_id = p.id WHERE p.age > 60",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Which cities do our patients come from?",
+   "sql": "SELECT DISTINCT city FROM patients",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctor handled the most expensive appointment?",
+   "sql": "SELECT d.name, a.fee FROM appointments a JOIN doctors d ON d.id = a.doctor_id ORDER BY a.fee DESC LIMIT 1",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Which patients have had more than one appointment?",
+   "sql": "SELECT p.name FROM patients p JOIN appointments a ON a.patient_id = p.id GROUP BY p.id, p.name HAVING COUNT(*) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "How many patients live in Toronto?",
+   "sql": "SELECT COUNT(*) AS patient_count FROM patients WHERE city = 'Toronto'",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "List the names of patients who have seen a Dermatologist.",
+   "sql": "SELECT DISTINCT p.name FROM patients p JOIN appointments a ON a.patient_id = p.id JOIN doctors d ON d.id = a.doctor_id WHERE d.specialty = 'Dermatology'",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "Show the total fees collected by patient city.",
+   "sql": "SELECT p.city, SUM(a.fee) AS total_fees FROM appointments a JOIN patients p ON p.id = a.patient_id GROUP BY p.city ORDER BY total_fees DESC",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "What appointments happened during 2024, sorted by date?",
+   "sql": "SELECT id, date, fee FROM appointments WHERE date LIKE '2024-%' ORDER BY date",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "For each specialty, how many doctors are there?",
+   "sql": "SELECT specialty, COUNT(*) AS doctor_count FROM doctors GROUP BY specialty ORDER BY doctor_count DESC, specialty",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Which appointments had a fee below 100?",
+   "sql": "SELECT id, date, fee FROM appointments WHERE fee < 100",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Which appointments happened during 2022?",
+   "sql": "SELECT id, date, fee FROM appointments WHERE date BETWEEN '2022-01-01' AND '2022-12-31' ORDER BY date",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors practice dermatology?",
+   "sql": "SELECT name FROM doctors WHERE specialty = 'Dermatology' ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "What's the average appointment fee for each medical specialty?",
+   "sql": "SELECT d.specialty, AVG(a.fee) AS avg_fee FROM appointments a JOIN doctors d ON d.id = a.doctor_id GROUP BY d.specialty",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "Which specialties have an average appointment fee above 100?",
+   "sql": "SELECT d.specialty, AVG(a.fee) AS avg_fee FROM appointments a JOIN doctors d ON a.doctor_id = d.id GROUP BY d.specialty HAVING AVG(a.fee) > 100",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "For each city, show how many patients we have and their average age, but only for cities with at least two patients.",
+   "sql": "SELECT city, COUNT(*) AS patient_count, AVG(age) AS avg_age FROM patients GROUP BY city HAVING COUNT(*) >= 2",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "Which patients have seen the doctor with ID 3?",
+   "sql": "SELECT p.name FROM appointments a JOIN patients p ON a.patient_id = p.id WHERE a.doctor_id = 3",
+   "level": "medium"
+  },
+  {
+   "db": "hospital",
+   "question": "How many patients are older than 60?",
+   "sql": "SELECT COUNT(*) FROM patients WHERE age > 60",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Show the patients from Lisbon ordered from oldest to youngest.",
+   "sql": "SELECT name, age FROM patients WHERE city = 'Lisbon' ORDER BY age DESC",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Show doctor names, patient names, and dates for appointments where the patient is from Lisbon.",
+   "sql": "SELECT d.name AS doctor, p.name AS patient, a.date FROM appointments a JOIN doctors d ON a.doctor_id = d.id JOIN patients p ON a.patient_id = p.id WHERE p.city = 'Lisbon'",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "Which patient cities have generated more than 200 in total appointment fees?",
+   "sql": "SELECT p.city, SUM(a.fee) AS total_fees FROM patients p JOIN appointments a ON p.id = a.patient_id GROUP BY p.city HAVING SUM(a.fee) > 200",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "How many patients live in Lisbon?",
+   "sql": "SELECT COUNT(*) AS patient_count FROM patients WHERE city = 'Lisbon'",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors have handled more than two appointments, and how many did each handle?",
+   "sql": "SELECT d.name, COUNT(a.id) AS appointment_count FROM doctors d JOIN appointments a ON d.id = a.doctor_id GROUP BY d.id, d.name HAVING COUNT(a.id) > 2",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "Which appointments involved patients from Lisbon and doctors with at least 10 years of experience?",
+   "sql": "SELECT a.id, a.date, p.name AS patient, d.name AS doctor FROM appointments a JOIN patients p ON p.id = a.patient_id JOIN doctors d ON d.id = a.doctor_id WHERE p.city = 'Lisbon' AND d.years_experience >= 10",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "What is the average patient age in each city?",
+   "sql": "SELECT city, AVG(age) AS average_age FROM patients GROUP BY city",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Show flight ID, airline name, origin city, and destination city for flights longer than 400 minutes and cheaper than 700.",
+   "sql": "SELECT f.id, a.name, o.city AS origin_city, d.city AS destination_city FROM flights f JOIN airlines a ON f.airline_id = a.id JOIN airports o ON f.origin = o.code JOIN airports d ON f.destination = d.code WHERE f.duration_min > 400 AND f.price < 700 ORDER BY f.id",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "Which flights leave from Madrid and last under 450 minutes?",
+   "sql": "SELECT f.id, f.destination, f.duration_min FROM flights f JOIN airports a ON f.origin = a.code WHERE a.city = 'Madrid' AND f.duration_min < 450",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Which flights cost more than the average price of all flights, most expensive first?",
+   "sql": "SELECT id, price FROM flights WHERE price > (SELECT AVG(price) FROM flights) ORDER BY price DESC",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "What is the name and country of airline id 2?",
+   "sql": "SELECT name, country FROM airlines WHERE id = 2",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "Which airlines operate more than one flight longer than 600 minutes?",
+   "sql": "SELECT a.name, COUNT(*) AS long_flight_count FROM airlines a JOIN flights f ON f.airline_id = a.id WHERE f.duration_min > 600 GROUP BY a.id, a.name HAVING COUNT(*) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "Count flights by destination country, highest count first.",
+   "sql": "SELECT ap.country, COUNT(*) AS flight_count FROM flights f JOIN airports ap ON f.destination = ap.code GROUP BY ap.country ORDER BY flight_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "How many flights arrive in Berlin?",
+   "sql": "SELECT COUNT(*) FROM flights f JOIN airports a ON f.destination = a.code WHERE a.city = 'Berlin'",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "What are the names of the airlines registered in India?",
+   "sql": "SELECT name FROM airlines WHERE country = 'India'",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "What are the three longest flights, including airline name and route?",
+   "sql": "SELECT a.name AS airline_name, f.origin, f.destination, f.duration_min FROM flights f JOIN airlines a ON a.id = f.airline_id ORDER BY f.duration_min DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Which flights arrive in Berlin and cost no more than 600?",
+   "sql": "SELECT f.id, f.origin, f.price FROM flights f JOIN airports ap ON ap.code = f.destination WHERE ap.city = 'Berlin' AND f.price <= 600",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "How many flights last longer than 400 minutes?",
+   "sql": "SELECT COUNT(*) AS flight_count FROM flights WHERE duration_min > 400",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "For each destination airport, show its code, city, and arrival count, but only where more than one flight arrives.",
+   "sql": "SELECT ap.code, ap.city, COUNT(*) AS arrivals FROM airports ap JOIN flights f ON ap.code = f.destination GROUP BY ap.code, ap.city HAVING COUNT(*) > 1 ORDER BY arrivals DESC",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "How many flights depart from each origin airport code, most frequent first?",
+   "sql": "SELECT origin, COUNT(*) AS flight_count FROM flights GROUP BY origin ORDER BY flight_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Show airline names and destinations for flights shorter than 600 minutes.",
+   "sql": "SELECT a.name AS airline_name, f.destination FROM airlines a JOIN flights f ON f.airline_id = a.id WHERE f.duration_min < 600 ORDER BY a.name",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "What are the five cheapest flights, including the airline name?",
+   "sql": "SELECT a.name AS airline_name, f.origin, f.destination, f.price FROM flights f JOIN airlines a ON a.id = f.airline_id ORDER BY f.price ASC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "What is the shortest flight duration in the flights table?",
+   "sql": "SELECT MIN(duration_min) FROM flights",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "How many flights arrive at LIS?",
+   "sql": "SELECT COUNT(*) FROM flights WHERE destination = 'LIS'",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "Which flights cost less than 200, cheapest first?",
+   "sql": "SELECT id, origin, destination, price FROM flights WHERE price < 200 ORDER BY price ASC",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "How many flights last longer than 600 minutes?",
+   "sql": "SELECT COUNT(*) FROM flights WHERE duration_min > 600",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "What is the total duration of flights grouped by destination airport code?",
+   "sql": "SELECT destination, SUM(duration_min) AS total_duration FROM flights GROUP BY destination",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Which airport codes and cities are used as flight origins at least once?",
+   "sql": "SELECT DISTINCT a.code, a.city FROM airports a JOIN flights f ON a.code = f.origin ORDER BY a.city",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Show flight IDs and durations in hours for flights leaving Berlin, shortest first.",
+   "sql": "SELECT f.id, f.duration_min / 60.0 AS hours FROM flights f JOIN airports ap ON f.origin = ap.code WHERE ap.city = 'Berlin' ORDER BY f.duration_min",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Which flights cost more than the average price of all flights?",
+   "sql": "SELECT id, origin, destination, price FROM flights WHERE price > (SELECT AVG(price) FROM flights)",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "How many flights depart from each origin, sorted by the number of departures descending?",
+   "sql": "SELECT origin, COUNT(*) AS departure_count FROM flights GROUP BY origin ORDER BY departure_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "What are the names of airlines from India?",
+   "sql": "SELECT name FROM airlines WHERE country = 'India'",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "List flights priced from 100 to 600, cheapest first.",
+   "sql": "SELECT id, price FROM flights WHERE price BETWEEN 100 AND 600 ORDER BY price",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "For each airline id, how many flights are there?",
+   "sql": "SELECT airline_id, COUNT(*) AS flight_count FROM flights GROUP BY airline_id",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Show the five most expensive flights with their origin city.",
+   "sql": "SELECT f.id, ap.city AS origin_city, f.price FROM flights f JOIN airports ap ON f.origin = ap.code ORDER BY f.price DESC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "What airport codes are located in Germany?",
+   "sql": "SELECT code FROM airports WHERE country = 'Germany'",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "What is the most common destination country for flights priced above 300?",
+   "sql": "SELECT ap.country FROM flights f JOIN airports ap ON f.destination = ap.code WHERE f.price > 300 GROUP BY ap.country ORDER BY COUNT(*) DESC LIMIT 1",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "How many airports are there in Spain?",
+   "sql": "SELECT COUNT(*) FROM airports WHERE country = 'Spain'",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "Which airline has the highest average ticket price across its flights?",
+   "sql": "SELECT al.name FROM flights f JOIN airlines al ON f.airline_id = al.id GROUP BY al.id, al.name ORDER BY AVG(f.price) DESC LIMIT 1",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "Which airlines have flown to more than one distinct destination?",
+   "sql": "SELECT al.name FROM airlines al JOIN flights f ON f.airline_id = al.id GROUP BY al.id, al.name HAVING COUNT(DISTINCT f.destination) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "Which airline operates the most expensive flight?",
+   "sql": "SELECT a.name FROM flights f JOIN airlines a ON f.airline_id = a.id ORDER BY f.price DESC LIMIT 1",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "How many airlines are based in Germany?",
+   "sql": "SELECT COUNT(*) AS airline_count FROM airlines WHERE country = 'Germany'",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "Which airport codes are used as both a departure point and an arrival point?",
+   "sql": "SELECT code FROM airports WHERE code IN (SELECT origin FROM flights) AND code IN (SELECT destination FROM flights)",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "What is the average ticket price for each airline that has flights?",
+   "sql": "SELECT a.name, AVG(f.price) AS avg_price FROM airlines a JOIN flights f ON a.id = f.airline_id GROUP BY a.id, a.name ORDER BY avg_price DESC",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Show flight IDs and destination cities for flights shorter than 450 minutes.",
+   "sql": "SELECT f.id, ap.city FROM flights f JOIN airports ap ON f.destination = ap.code WHERE f.duration_min < 450 ORDER BY f.id",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Which airlines have at least two flights and an average ticket price under 500?",
+   "sql": "SELECT a.name, a.country, COUNT(f.id) AS flight_count, AVG(f.price) AS avg_price FROM airlines a JOIN flights f ON a.id = f.airline_id GROUP BY a.id, a.name, a.country HAVING COUNT(f.id) >= 2 AND AVG(f.price) < 500",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "List flights from a German airport to a Spanish airport, including airline name.",
+   "sql": "SELECT al.name, f.origin, f.destination FROM flights f JOIN airlines al ON al.id = f.airline_id JOIN airports o ON o.code = f.origin JOIN airports d ON d.code = f.destination WHERE o.country = 'Germany' AND d.country = 'Spain'",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "Which origin airports have an average departure price above 300, highest average first?",
+   "sql": "SELECT origin, AVG(price) AS avg_price FROM flights GROUP BY origin HAVING AVG(price) > 300 ORDER BY avg_price DESC",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "Show the IDs and names of airlines whose names begin with the letter I.",
+   "sql": "SELECT id, name FROM airlines WHERE name LIKE 'I%' ORDER BY id",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "List airline names and flight durations for airlines based in Spain.",
+   "sql": "SELECT a.name, f.duration_min FROM airlines a JOIN flights f ON f.airline_id = a.id WHERE a.country = 'Spain'",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Which cities have airports that are departure points for flights longer than 500 minutes?",
+   "sql": "SELECT DISTINCT ap.city FROM flights f JOIN airports ap ON f.origin = ap.code WHERE f.duration_min > 500",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "What is the shortest recorded flight duration?",
+   "sql": "SELECT MIN(duration_min) AS shortest_duration FROM flights",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "List airline names and their cheapest flight price, but only airlines whose cheapest flight is below 150.",
+   "sql": "SELECT al.name, MIN(f.price) AS cheapest_price FROM airlines al JOIN flights f ON f.airline_id = al.id GROUP BY al.id, al.name HAVING MIN(f.price) < 150",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "Which flights leave from BOM?",
+   "sql": "SELECT * FROM flights WHERE origin = 'BOM'",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "Which destination airports receive flights from more than one distinct airline?",
+   "sql": "SELECT f.destination, COUNT(DISTINCT f.airline_id) AS airline_count FROM flights f GROUP BY f.destination HAVING COUNT(DISTINCT f.airline_id) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "For each origin airport code, what is the highest ticket price, sorted from highest to lowest?",
+   "sql": "SELECT origin, MAX(price) AS max_price FROM flights GROUP BY origin ORDER BY max_price DESC",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Which flights cost less than 500, ordered from cheapest to most expensive?",
+   "sql": "SELECT id, origin, destination, price FROM flights WHERE price < 500 ORDER BY price ASC",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "List flights priced between 100 and 600, with the highest price first.",
+   "sql": "SELECT id, price FROM flights WHERE price BETWEEN 100 AND 600 ORDER BY price DESC",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "Among airlines with at least one flight, which one has the highest average ticket price?",
+   "sql": "SELECT a.name, AVG(f.price) AS avg_price FROM airlines a JOIN flights f ON a.id = f.airline_id GROUP BY a.id, a.name ORDER BY avg_price DESC LIMIT 1",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "Show flights departing from BOM, shortest first.",
+   "sql": "SELECT id, destination, duration_min FROM flights WHERE origin = 'BOM' ORDER BY duration_min ASC",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "Which airlines operate flights departing from airports in Germany?",
+   "sql": "SELECT DISTINCT al.name FROM flights f JOIN airlines al ON f.airline_id = al.id JOIN airports ap ON f.origin = ap.code WHERE ap.country = 'Germany'",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "Find airlines that have no flights priced below 200.",
+   "sql": "SELECT name FROM airlines a WHERE NOT EXISTS (SELECT 1 FROM flights f WHERE f.airline_id = a.id AND f.price < 200)",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "Which destination cities are served by Skyward?",
+   "sql": "SELECT DISTINCT ap.city FROM flights f JOIN airlines al ON f.airline_id = al.id JOIN airports ap ON f.destination = ap.code WHERE al.name = 'Skyward'",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "List airlines that have at least one flight, along with their flight counts, most flights first.",
+   "sql": "SELECT a.name, COUNT(f.id) AS flight_count FROM airlines a JOIN flights f ON f.airline_id = a.id GROUP BY a.id, a.name ORDER BY flight_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "What is the average ticket price for each origin airport?",
+   "sql": "SELECT origin, AVG(price) AS average_price FROM flights GROUP BY origin",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "List the airport codes in Spain in alphabetical order.",
+   "sql": "SELECT code FROM airports WHERE country = 'Spain' ORDER BY code ASC",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "Which airline names operate a flight from BOM to LIS?",
+   "sql": "SELECT DISTINCT a.name FROM airlines a JOIN flights f ON a.id = f.airline_id WHERE f.origin = 'BOM' AND f.destination = 'LIS'",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "What airport codes are in Madrid, ordered by code?",
+   "sql": "SELECT code FROM airports WHERE city = 'Madrid' ORDER BY code",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "How many airports does Germany have in this database?",
+   "sql": "SELECT COUNT(*) AS airport_count FROM airports WHERE country = 'Germany'",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "How many flights does each airline have listed?",
+   "sql": "SELECT a.name, COUNT(f.id) AS flight_count FROM airlines a JOIN flights f ON f.airline_id = a.id GROUP BY a.id, a.name",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Show each airline's highest ticket price.",
+   "sql": "SELECT airline_id, MAX(price) AS highest_price FROM flights GROUP BY airline_id",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "What are the three lowest ticket prices in the flights table?",
+   "sql": "SELECT price FROM flights ORDER BY price ASC LIMIT 3",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "Find the city and country of the destination of the most expensive flight.",
+   "sql": "SELECT city, country FROM airports WHERE code = (SELECT destination FROM flights ORDER BY price DESC LIMIT 1)",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "What are the names of projects with a budget under 200000?",
+   "sql": "SELECT name FROM projects WHERE budget < 200000",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "For each department, show the department name, the number of employees, and the number of projects.",
+   "sql": "SELECT d.name, COUNT(DISTINCT e.id) AS employee_count, COUNT(DISTINCT p.id) AS project_count FROM departments d LEFT JOIN employees e ON e.department_id = d.id LEFT JOIN projects p ON p.department_id = d.id GROUP BY d.id, d.name",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "How many employees does each department have? Include the department name.",
+   "sql": "SELECT d.name, COUNT(*) AS employee_count FROM departments d JOIN employees e ON e.department_id = d.id GROUP BY d.id, d.name",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "What is the total salary of employees with the title 'Analyst'?",
+   "sql": "SELECT SUM(salary) FROM employees WHERE title = 'Analyst'",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "What is the average salary for each job title?",
+   "sql": "SELECT title, AVG(salary) AS average_salary FROM employees GROUP BY title",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "For each title, what are the minimum and maximum salaries?",
+   "sql": "SELECT title, MIN(salary) AS min_salary, MAX(salary) AS max_salary FROM employees GROUP BY title",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "List each project name with its department name.",
+   "sql": "SELECT p.name AS project_name, d.name AS department_name FROM projects p JOIN departments d ON p.department_id = d.id",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "Who are the three highest-paid employees?",
+   "sql": "SELECT name, salary FROM employees ORDER BY salary DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "List project names and the location of the department they belong to.",
+   "sql": "SELECT p.name AS project_name, d.location FROM projects p JOIN departments d ON p.department_id = d.id",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "For each department, show the number of employees and the number of projects, including zeros.",
+   "sql": "SELECT d.name, COUNT(DISTINCT e.id) AS employee_count, COUNT(DISTINCT p.id) AS project_count FROM departments d LEFT JOIN employees e ON e.department_id = d.id LEFT JOIN projects p ON p.department_id = d.id GROUP BY d.id, d.name",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "Which departments are located in Vienna?",
+   "sql": "SELECT name FROM departments WHERE location = 'Vienna'",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "Which projects belong to departments that have at least one employee with the title Manager?",
+   "sql": "SELECT p.name FROM projects p WHERE p.department_id IN (SELECT department_id FROM employees WHERE title = 'Manager')",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "Which employees work in departments located in Vienna and earn at least 80000?",
+   "sql": "SELECT e.name, e.salary FROM employees e JOIN departments d ON e.department_id = d.id WHERE d.location = 'Vienna' AND e.salary >= 80000",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "Which departments have total project budgets above 500000?",
+   "sql": "SELECT d.name FROM departments d JOIN projects p ON p.department_id = d.id GROUP BY d.id, d.name HAVING SUM(p.budget) > 500000",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "Which employees work in the Sales department?",
+   "sql": "SELECT e.name FROM employees e JOIN departments d ON e.department_id = d.id WHERE d.name = 'Sales'",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "List departments with their number of projects, including departments with no projects.",
+   "sql": "SELECT d.name, COUNT(p.id) AS project_count FROM departments d LEFT JOIN projects p ON p.department_id = d.id GROUP BY d.id, d.name",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "Which department has the highest average employee salary?",
+   "sql": "SELECT d.name FROM departments d JOIN employees e ON e.department_id = d.id GROUP BY d.id, d.name ORDER BY AVG(e.salary) DESC LIMIT 1",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "List employees who earn more than the company-wide average salary.",
+   "sql": "SELECT name, salary FROM employees WHERE salary > (SELECT AVG(salary) FROM employees)",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "Show each employee's name together with their department's name.",
+   "sql": "SELECT e.name AS employee_name, d.name AS department_name FROM employees e JOIN departments d ON e.department_id = d.id",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "List department names alphabetically.",
+   "sql": "SELECT name FROM departments ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "How many projects belong to department 2?",
+   "sql": "SELECT COUNT(*) FROM projects WHERE department_id = 2",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "Which departments have an average employee salary above 70000 and at least two employees?",
+   "sql": "SELECT d.name, AVG(e.salary) AS avg_salary FROM departments d JOIN employees e ON e.department_id = d.id GROUP BY d.id, d.name HAVING COUNT(e.id) >= 2 AND AVG(e.salary) > 70000",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "What are the project names with budgets between 100000 and 600000?",
+   "sql": "SELECT name FROM projects WHERE budget BETWEEN 100000 AND 600000 ORDER BY budget",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "Which employees earn more than the average salary in their own department?",
+   "sql": "SELECT e.name, e.salary, e.department_id FROM employees e WHERE e.salary > (SELECT AVG(e2.salary) FROM employees e2 WHERE e2.department_id = e.department_id)",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "How many employees were hired in each year, oldest year first?",
+   "sql": "SELECT hire_year, COUNT(*) AS employee_count FROM employees GROUP BY hire_year ORDER BY hire_year",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "List employees in the Engineering department, oldest hire first.",
+   "sql": "SELECT e.name, e.hire_year FROM employees e JOIN departments d ON e.department_id = d.id WHERE d.name = 'Engineering' ORDER BY e.hire_year ASC",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "Which departments are based in Vienna?",
+   "sql": "SELECT name FROM departments WHERE location = 'Vienna'",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "What is the highest salary in the employees table?",
+   "sql": "SELECT MAX(salary) FROM employees",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "Which project has the largest budget?",
+   "sql": "SELECT name, budget FROM projects ORDER BY budget DESC LIMIT 1",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "How many employees were hired before 2015?",
+   "sql": "SELECT COUNT(*) FROM employees WHERE hire_year < 2015",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "For each department, how many employees are there?",
+   "sql": "SELECT d.name, COUNT(e.id) AS employee_count FROM departments d LEFT JOIN employees e ON e.department_id = d.id GROUP BY d.id, d.name",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "Which employees work in a department located in Lisbon and earn over 60000?",
+   "sql": "SELECT e.name FROM employees e JOIN departments d ON e.department_id = d.id WHERE d.location = 'Lisbon' AND e.salary > 60000",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "How many employees were hired after 2014?",
+   "sql": "SELECT COUNT(*) FROM employees WHERE hire_year > 2014",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "Which projects have a budget above 500000?",
+   "sql": "SELECT name, budget FROM projects WHERE budget > 500000 ORDER BY budget DESC",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "Which employees were hired in 2015? Sort by name.",
+   "sql": "SELECT name FROM employees WHERE hire_year = 2015 ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "Which departments have total project budget over 500000?",
+   "sql": "SELECT d.name, SUM(p.budget) AS total_budget FROM departments d JOIN projects p ON p.department_id = d.id GROUP BY d.id, d.name HAVING SUM(p.budget) > 500000",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "How many projects are assigned to department 2?",
+   "sql": "SELECT COUNT(*) FROM projects WHERE department_id = 2",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "What is the total project budget for each department name?",
+   "sql": "SELECT d.name, SUM(p.budget) AS total_budget FROM departments d JOIN projects p ON p.department_id = d.id GROUP BY d.id, d.name",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "Which department has the largest total project budget?",
+   "sql": "SELECT d.name, SUM(p.budget) AS total_budget FROM departments d JOIN projects p ON p.department_id = d.id GROUP BY d.id, d.name ORDER BY total_budget DESC LIMIT 1",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "Which employees have the same title as Elena Nakamura but are not Elena Nakamura?",
+   "sql": "SELECT name, title FROM employees WHERE title = (SELECT title FROM employees WHERE name = 'Elena Nakamura') AND name <> 'Elena Nakamura'",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "How many employees were hired in each year?",
+   "sql": "SELECT hire_year, COUNT(*) AS employee_count FROM employees GROUP BY hire_year ORDER BY hire_year",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "Who are the employees with the title Associate?",
+   "sql": "SELECT name FROM employees WHERE title = 'Associate'",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "What are the top three highest-paid employees?",
+   "sql": "SELECT name, salary FROM employees ORDER BY salary DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "Which employees earn more than 90000, ordered from highest to lowest salary?",
+   "sql": "SELECT name FROM employees WHERE salary > 90000 ORDER BY salary DESC",
+   "level": "easy"
+  }
+ ],
+ "test_seen": [
+  {
+   "db": "shop",
+   "question": "Which orders were placed on 2022-09-09?",
+   "sql": "SELECT id, customer_id, product_id FROM orders WHERE order_date = '2022-09-09'",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "List each customer's name and number of orders, with the busiest customers first.",
+   "sql": "SELECT c.name, COUNT(o.id) FROM customers c JOIN orders o ON o.customer_id = c.id GROUP BY c.id ORDER BY COUNT(o.id) DESC",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "How many customers are based in Mumbai?",
+   "sql": "SELECT COUNT(*) FROM customers WHERE city = 'Mumbai'",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "Which products have been ordered by more than one distinct customer?",
+   "sql": "SELECT p.name FROM products p JOIN orders o ON p.id = o.product_id GROUP BY p.id, p.name HAVING COUNT(DISTINCT o.customer_id) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "Which customers have spent more than 500 in total across their orders?",
+   "sql": "SELECT c.name FROM customers c JOIN orders o ON o.customer_id = c.id JOIN products p ON p.id = o.product_id GROUP BY c.id HAVING SUM(o.quantity * p.price) > 500",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "For each city, show how many customers signed up after 2020 and how many orders those customers placed.",
+   "sql": "SELECT c.city, COUNT(DISTINCT c.id) AS customers_after_2020, COUNT(o.id) AS orders_from_them FROM customers c LEFT JOIN orders o ON o.customer_id = c.id WHERE c.signup_year > 2020 GROUP BY c.city",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "List all customers from Mumbai, alphabetized by name.",
+   "sql": "SELECT name FROM customers WHERE city = 'Mumbai' ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "shop",
+   "question": "Show order IDs and product categories for orders placed in 2022, newest order first.",
+   "sql": "SELECT o.id, p.category, o.order_date FROM orders o JOIN products p ON p.id = o.product_id WHERE o.order_date LIKE '2022%' ORDER BY o.order_date DESC",
+   "level": "medium"
+  },
+  {
+   "db": "shop",
+   "question": "Find categories with an average product price above 100 and at least two products.",
+   "sql": "SELECT category, AVG(price) AS avg_price, COUNT(*) AS product_count FROM products GROUP BY category HAVING AVG(price) > 100 AND COUNT(*) >= 2",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "Which product generated the highest total revenue from orders, where revenue is quantity times price?",
+   "sql": "SELECT p.name, SUM(o.quantity * p.price) AS revenue FROM orders o JOIN products p ON p.id = o.product_id GROUP BY p.id, p.name ORDER BY revenue DESC LIMIT 1",
+   "level": "hard"
+  },
+  {
+   "db": "shop",
+   "question": "How many electronics products are in the product table?",
+   "sql": "SELECT COUNT(*) FROM products WHERE category = 'Electronics'",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Which students have no enrollments at all?",
+   "sql": "SELECT s.name FROM students s WHERE NOT EXISTS (SELECT 1 FROM enrollments e WHERE e.student_id = s.id)",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Find students who are enrolled in both course ID 1 and course ID 3.",
+   "sql": "SELECT s.name FROM students s JOIN enrollments e1 ON s.id = e1.student_id AND e1.course_id = 1 JOIN enrollments e2 ON s.id = e2.student_id AND e2.course_id = 3",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "How many courses are worth 3 or more credits?",
+   "sql": "SELECT COUNT(*) AS course_count FROM courses WHERE credits >= 3",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Which student names begin with the letter M?",
+   "sql": "SELECT name FROM students WHERE name LIKE 'M%'",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Which courses are worth more than 2 credits?",
+   "sql": "SELECT title, credits FROM courses WHERE credits > 2",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Which courses are not in the Math department?",
+   "sql": "SELECT title, department FROM courses WHERE department <> 'Math' ORDER BY title",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "List departments that have more than one course and an average credit value of at least 3.",
+   "sql": "SELECT department FROM courses GROUP BY department HAVING COUNT(*) > 1 AND AVG(credits) >= 3",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Show the scores for Algebra alongside the course title.",
+   "sql": "SELECT c.title, e.score FROM courses c JOIN enrollments e ON c.id = e.course_id WHERE c.title = 'Algebra'",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "What are the names and ages of students older than 14?",
+   "sql": "SELECT name, age FROM students WHERE age > 14 ORDER BY age",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "For each student, show their name and how many enrollments they have.",
+   "sql": "SELECT s.name, COUNT(e.id) AS enrollment_count FROM students s LEFT JOIN enrollments e ON s.id = e.student_id GROUP BY s.id, s.name",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "For each department, show the number of distinct students enrolled in its courses and the average score, but only departments with at least two enrollments.",
+   "sql": "SELECT c.department, COUNT(DISTINCT e.student_id) AS student_count, AVG(e.score) AS average_score FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.department HAVING COUNT(e.id) >= 2",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Show the names of students enrolled in course ID 1.",
+   "sql": "SELECT s.name FROM enrollments e JOIN students s ON e.student_id = s.id WHERE e.course_id = 1",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "Which students have no enrollment records at all?",
+   "sql": "SELECT s.name FROM students s WHERE NOT EXISTS (SELECT 1 FROM enrollments e WHERE e.student_id = s.id) ORDER BY s.name",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "How many enrollments does each course have?",
+   "sql": "SELECT course_id, COUNT(*) AS enrollment_count FROM enrollments GROUP BY course_id",
+   "level": "medium"
+  },
+  {
+   "db": "school",
+   "question": "List the departments that have courses, without duplicates.",
+   "sql": "SELECT DISTINCT department FROM courses ORDER BY department",
+   "level": "easy"
+  },
+  {
+   "db": "school",
+   "question": "Find students who scored higher than the overall average enrollment score.",
+   "sql": "SELECT s.name, e.score FROM students s JOIN enrollments e ON s.id = e.student_id WHERE e.score > (SELECT AVG(score) FROM enrollments)",
+   "level": "hard"
+  },
+  {
+   "db": "school",
+   "question": "Show the top three enrollment scores along with the student names.",
+   "sql": "SELECT s.name, e.score FROM students s JOIN enrollments e ON s.id = e.student_id ORDER BY e.score DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "How many loans are still marked as not returned?",
+   "sql": "SELECT COUNT(*) FROM loans WHERE returned = 0",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "List Fantasy book titles together with their authors' names.",
+   "sql": "SELECT b.title, a.name FROM books b JOIN authors a ON b.author_id = a.id WHERE b.genre = 'Fantasy'",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "List the member names for loans made in 2024.",
+   "sql": "SELECT member_name FROM loans WHERE loan_date LIKE '2024-%'",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Which books were published before 1970, oldest first?",
+   "sql": "SELECT title, year FROM books WHERE year < 1970 ORDER BY year",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "What are the titles and page counts of books longer than 300 pages, longest first?",
+   "sql": "SELECT title, pages FROM books WHERE pages > 300 ORDER BY pages DESC",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "List all author names in alphabetical order.",
+   "sql": "SELECT name FROM authors ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "What are the five longest books, including their page counts?",
+   "sql": "SELECT title, pages FROM books ORDER BY pages DESC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "List every author's name and country, sorted by country and then name.",
+   "sql": "SELECT name, country FROM authors ORDER BY country, name",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "How many authors come from each country?",
+   "sql": "SELECT country, COUNT(*) AS author_count FROM authors GROUP BY country",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "Which book was published earliest, and in what year?",
+   "sql": "SELECT title, year FROM books ORDER BY year ASC LIMIT 1",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "List unreturned loans for Fantasy or Mystery books, including the member name and book title.",
+   "sql": "SELECT l.member_name, b.title, b.genre FROM loans l JOIN books b ON l.book_id = b.id WHERE l.returned = 0 AND b.genre IN ('Fantasy', 'Mystery')",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "Show the titles of Fantasy books, starting with the most recent.",
+   "sql": "SELECT title FROM books WHERE genre = 'Fantasy' ORDER BY year DESC",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "How many authors in the database are from Norway?",
+   "sql": "SELECT COUNT(*) FROM authors WHERE country = 'Norway'",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "How many books does each author have in the library, including authors with none?",
+   "sql": "SELECT a.name, COUNT(b.id) AS book_count FROM authors a LEFT JOIN books b ON b.author_id = a.id GROUP BY a.id, a.name ORDER BY book_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "library",
+   "question": "What is the title and publication year of the book with id 2?",
+   "sql": "SELECT title, year FROM books WHERE id = 2",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Which authors have written more than one book?",
+   "sql": "SELECT a.name, COUNT(*) AS book_count FROM authors a JOIN books b ON a.id = b.author_id GROUP BY a.id, a.name HAVING COUNT(*) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "library",
+   "question": "How many books in the catalog are listed as History?",
+   "sql": "SELECT COUNT(*) AS history_books FROM books WHERE genre = 'History'",
+   "level": "easy"
+  },
+  {
+   "db": "library",
+   "question": "Which authors have at least one book but none of their books have ever been loaned?",
+   "sql": "SELECT a.name FROM authors a JOIN books b ON a.id = b.author_id LEFT JOIN loans l ON b.id = l.book_id GROUP BY a.id, a.name HAVING COUNT(l.id) = 0",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors have generated more than 500 in total appointment fees?",
+   "sql": "SELECT d.name, SUM(a.fee) AS total_fees FROM doctors d JOIN appointments a ON d.id = a.doctor_id GROUP BY d.id, d.name HAVING SUM(a.fee) > 500",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "Which patients have never had an appointment?",
+   "sql": "SELECT name FROM patients WHERE id NOT IN (SELECT patient_id FROM appointments)",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors have treated more than one distinct patient?",
+   "sql": "SELECT d.name, COUNT(DISTINCT a.patient_id) AS patients_seen FROM appointments a JOIN doctors d ON d.id = a.doctor_id GROUP BY d.id HAVING COUNT(DISTINCT a.patient_id) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "List all pediatricians by name.",
+   "sql": "SELECT name FROM doctors WHERE specialty = 'Pediatrics'",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors have brought in more than $150 in total fees?",
+   "sql": "SELECT d.name, SUM(a.fee) AS total_fees FROM appointments a JOIN doctors d ON d.id = a.doctor_id GROUP BY d.id HAVING SUM(a.fee) > 150",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors have fewer than 10 years of experience?",
+   "sql": "SELECT name, specialty FROM doctors WHERE years_experience < 10",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "How many patients are older than 70?",
+   "sql": "SELECT COUNT(*) FROM patients WHERE age > 70",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors have less than 10 years of experience?",
+   "sql": "SELECT name, specialty FROM doctors WHERE years_experience < 10",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "For each patient, show the name and total fees, but only patients who have paid more than 150 overall.",
+   "sql": "SELECT p.name, SUM(a.fee) AS total_fee FROM patients p JOIN appointments a ON a.patient_id = p.id GROUP BY p.id, p.name HAVING SUM(a.fee) > 150 ORDER BY total_fee DESC",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "How many doctors are in the database?",
+   "sql": "SELECT COUNT(*) AS doctor_count FROM doctors",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Who are the patients aged 82?",
+   "sql": "SELECT name FROM patients WHERE age = 82",
+   "level": "easy"
+  },
+  {
+   "db": "hospital",
+   "question": "Which cities have more than one patient and an average patient age over 50?",
+   "sql": "SELECT city, COUNT(*) AS patient_count, AVG(age) AS avg_age FROM patients GROUP BY city HAVING COUNT(*) > 1 AND AVG(age) > 50",
+   "level": "hard"
+  },
+  {
+   "db": "hospital",
+   "question": "How many patients are there in each city, most populated first?",
+   "sql": "SELECT city, COUNT(*) AS patient_count FROM patients GROUP BY city ORDER BY patient_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Which airline names are based in Spain, listed alphabetically?",
+   "sql": "SELECT name FROM airlines WHERE country = 'Spain' ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "Which airlines fly to both Berlin and Madrid?",
+   "sql": "SELECT a.name FROM airlines a WHERE EXISTS (SELECT 1 FROM flights f JOIN airports ap ON ap.code = f.destination WHERE f.airline_id = a.id AND ap.city = 'Berlin') AND EXISTS (SELECT 1 FROM flights f JOIN airports ap ON ap.code = f.destination WHERE f.airline_id = a.id AND ap.city = 'Madrid')",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "Which flight IDs depart from BOM?",
+   "sql": "SELECT id FROM flights WHERE origin = 'BOM'",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "List flights priced above the overall average, with airline name.",
+   "sql": "SELECT a.name, f.id, f.price FROM flights f JOIN airlines a ON a.id = f.airline_id WHERE f.price > (SELECT AVG(price) FROM flights)",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "For airlines with flights, show each airline name and its number of flights, most flights first.",
+   "sql": "SELECT a.name, COUNT(f.id) AS flight_count FROM airlines a JOIN flights f ON a.id = f.airline_id GROUP BY a.id, a.name ORDER BY flight_count DESC",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "What is the average ticket price for flights arriving in each destination city?",
+   "sql": "SELECT ap.city, AVG(f.price) AS avg_price FROM flights f JOIN airports ap ON f.destination = ap.code GROUP BY ap.city",
+   "level": "medium"
+  },
+  {
+   "db": "flights",
+   "question": "Which airlines are based in Spain?",
+   "sql": "SELECT name FROM airlines WHERE country = 'Spain'",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "Which flights last more than 500 minutes, longest first?",
+   "sql": "SELECT id, duration_min FROM flights WHERE duration_min > 500 ORDER BY duration_min DESC",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "For each airline, show average duration and average price only when it has at least 3 flights and average price under 500.",
+   "sql": "SELECT a.name, AVG(f.duration_min) AS average_duration, AVG(f.price) AS average_price FROM airlines a JOIN flights f ON a.id = f.airline_id GROUP BY a.id, a.name HAVING COUNT(*) >= 3 AND AVG(f.price) < 500",
+   "level": "hard"
+  },
+  {
+   "db": "flights",
+   "question": "How many airports are located in Germany?",
+   "sql": "SELECT COUNT(*) FROM airports WHERE country = 'Germany'",
+   "level": "easy"
+  },
+  {
+   "db": "flights",
+   "question": "For flights leaving Germany, show flight ID, price, and how far above the overall average price each one is.",
+   "sql": "SELECT f.id, f.price, f.price - (SELECT AVG(price) FROM flights) AS above_avg FROM flights f JOIN airports ap ON f.origin = ap.code WHERE ap.country = 'Germany' ORDER BY above_avg DESC",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "Which departments are not in Cairo?",
+   "sql": "SELECT name FROM departments WHERE location <> 'Cairo' ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "List project names and department names for projects whose budget is above the average project budget.",
+   "sql": "SELECT p.name, d.name FROM projects p JOIN departments d ON p.department_id = d.id WHERE p.budget > (SELECT AVG(budget) FROM projects)",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "Which employees work in a department that has a project with a budget over 500000?",
+   "sql": "SELECT DISTINCT e.name FROM employees e JOIN projects p ON p.department_id = e.department_id WHERE p.budget > 500000",
+   "level": "hard"
+  },
+  {
+   "db": "hr",
+   "question": "What is the average salary by job title, highest average first?",
+   "sql": "SELECT title, AVG(salary) AS avg_salary FROM employees GROUP BY title ORDER BY avg_salary DESC",
+   "level": "medium"
+  },
+  {
+   "db": "hr",
+   "question": "What are the names and salaries of employees with the title 'Manager', highest salary first?",
+   "sql": "SELECT name, salary FROM employees WHERE title = 'Manager' ORDER BY salary DESC",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "List employee names hired in 2016, alphabetically.",
+   "sql": "SELECT name FROM employees WHERE hire_year = 2016 ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "hr",
+   "question": "Which departments have more than one employee?",
+   "sql": "SELECT d.name FROM departments d JOIN employees e ON e.department_id = d.id GROUP BY d.id, d.name HAVING COUNT(*) > 1",
+   "level": "hard"
+  }
+ ],
+ "test_unseen": [
+  {
+   "db": "movies",
+   "question": "List each movie title with its director's name for movies from Spain.",
+   "sql": "SELECT m.title, d.name FROM movies m JOIN directors d ON m.director_id = d.id WHERE d.country = 'Spain'",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "Which directors have made at least two movies rated above 5?",
+   "sql": "SELECT d.name, COUNT(*) AS high_rated_movies FROM directors d JOIN movies m ON d.id = m.director_id WHERE m.rating > 5 GROUP BY d.id, d.name HAVING COUNT(*) >= 2",
+   "level": "hard"
+  },
+  {
+   "db": "movies",
+   "question": "What is the average star rating given by each reviewer, highest average first?",
+   "sql": "SELECT reviewer, AVG(stars) AS avg_stars FROM reviews GROUP BY reviewer ORDER BY avg_stars DESC",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "What genres appear in the movies table?",
+   "sql": "SELECT DISTINCT genre FROM movies",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "What is the average rating of movies released before 2005?",
+   "sql": "SELECT AVG(rating) AS average_rating FROM movies WHERE year < 2005",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "Show the top 3 highest-rated movies with their titles and ratings.",
+   "sql": "SELECT title, rating FROM movies ORDER BY rating DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "Which movies reviewed by Anya Reyes received at least 4 stars, with the director name?",
+   "sql": "SELECT m.title, d.name, r.stars FROM reviews r JOIN movies m ON r.movie_id = m.id JOIN directors d ON m.director_id = d.id WHERE r.reviewer = 'Anya Reyes' AND r.stars >= 4",
+   "level": "hard"
+  },
+  {
+   "db": "movies",
+   "question": "For each director, show the number of reviews on their movies and the average review stars, but only for directors with at least two reviews.",
+   "sql": "SELECT d.name, COUNT(r.id) AS review_count, AVG(r.stars) AS avg_stars FROM directors d JOIN movies m ON m.director_id = d.id JOIN reviews r ON r.movie_id = m.id GROUP BY d.id, d.name HAVING COUNT(r.id) >= 2",
+   "level": "hard"
+  },
+  {
+   "db": "movies",
+   "question": "Which five movies have the most reviews?",
+   "sql": "SELECT movie_id, COUNT(*) AS review_count FROM reviews GROUP BY movie_id ORDER BY review_count DESC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "Which director directed how many movies? Show director name and movie count.",
+   "sql": "SELECT d.name, COUNT(*) AS movie_count FROM directors d JOIN movies m ON m.director_id = d.id GROUP BY d.id, d.name",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "Which reviewers gave 5-star reviews, and which movie was each for?",
+   "sql": "SELECT r.reviewer, m.title FROM reviews r JOIN movies m ON r.movie_id = m.id WHERE r.stars = 5",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "Which directors have an average movie rating above 6.0? Show director name and average.",
+   "sql": "SELECT d.name, AVG(m.rating) AS avg_rating FROM directors d JOIN movies m ON m.director_id = d.id GROUP BY d.id, d.name HAVING AVG(m.rating) > 6.0",
+   "level": "hard"
+  },
+  {
+   "db": "movies",
+   "question": "Which reviewers have reviewed movies from both the Action and Comedy genres?",
+   "sql": "SELECT r.reviewer FROM reviews r JOIN movies m ON r.movie_id = m.id WHERE m.genre IN ('Action', 'Comedy') GROUP BY r.reviewer HAVING COUNT(DISTINCT m.genre) = 2",
+   "level": "hard"
+  },
+  {
+   "db": "movies",
+   "question": "Which reviewers have written more than one review?",
+   "sql": "SELECT reviewer FROM reviews GROUP BY reviewer HAVING COUNT(*) > 1",
+   "level": "hard"
+  },
+  {
+   "db": "movies",
+   "question": "For each genre, what is the average movie rating?",
+   "sql": "SELECT genre, AVG(rating) AS avg_rating FROM movies GROUP BY genre ORDER BY avg_rating DESC",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "Which action movies were released after 2008, newest first?",
+   "sql": "SELECT title, year FROM movies WHERE genre = 'Action' AND year > 2008 ORDER BY year DESC",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "How many directors are from Austria?",
+   "sql": "SELECT COUNT(*) AS austrian_directors FROM directors WHERE country = 'Austria'",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "List director names, movie titles, and reviewers for movies that have at least one 5-star review.",
+   "sql": "SELECT d.name, m.title, r.reviewer FROM directors d JOIN movies m ON d.id = m.director_id JOIN reviews r ON m.id = r.movie_id WHERE r.stars = 5 ORDER BY d.name, m.title",
+   "level": "hard"
+  },
+  {
+   "db": "movies",
+   "question": "Which movie titles contain the word Crimson, sorted by rating from highest to lowest?",
+   "sql": "SELECT title FROM movies WHERE title LIKE '%Crimson%' ORDER BY rating DESC",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "List each director's movies rated above 4, showing the director name and movie title.",
+   "sql": "SELECT d.name, m.title FROM directors d JOIN movies m ON d.id = m.director_id WHERE m.rating > 4 ORDER BY d.name, m.title",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "Which directors have names beginning with 'H'?",
+   "sql": "SELECT name FROM directors WHERE name LIKE 'H%'",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "List movie titles and reviewer names for 5-star reviews on movies released after 2000.",
+   "sql": "SELECT m.title, r.reviewer FROM reviews r JOIN movies m ON r.movie_id = m.id WHERE r.stars = 5 AND m.year > 2000 ORDER BY m.title",
+   "level": "hard"
+  },
+  {
+   "db": "movies",
+   "question": "For each genre, what is the average movie rating, from highest to lowest?",
+   "sql": "SELECT genre, AVG(rating) AS avg_rating FROM movies GROUP BY genre ORDER BY avg_rating DESC",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "Find movies whose rating is higher than the average rating of all movies.",
+   "sql": "SELECT title, rating FROM movies WHERE rating > (SELECT AVG(rating) FROM movies) ORDER BY rating DESC",
+   "level": "hard"
+  },
+  {
+   "db": "movies",
+   "question": "Which movies have never been reviewed?",
+   "sql": "SELECT title FROM movies WHERE id NOT IN (SELECT movie_id FROM reviews)",
+   "level": "hard"
+  },
+  {
+   "db": "movies",
+   "question": "List each movie title with its director's country, ordered by country and then title.",
+   "sql": "SELECT m.title, d.country FROM movies m JOIN directors d ON m.director_id = d.id ORDER BY d.country, m.title",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "List the names of directors from Spain in alphabetical order.",
+   "sql": "SELECT name FROM directors WHERE country = 'Spain' ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "What is the earliest release year for each genre?",
+   "sql": "SELECT genre, MIN(year) AS earliest_year FROM movies GROUP BY genre ORDER BY earliest_year",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "What are the titles of Comedy movies rated above 6?",
+   "sql": "SELECT title FROM movies WHERE genre = 'Comedy' AND rating > 6",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "Which directors are based in Spain, listed alphabetically?",
+   "sql": "SELECT name FROM directors WHERE country = 'Spain' ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "Which reviewers gave a 1-star review?",
+   "sql": "SELECT reviewer FROM reviews WHERE stars = 1",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "Which reviews gave exactly 5 stars?",
+   "sql": "SELECT reviewer, movie_id FROM reviews WHERE stars = 5",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "Which three directors have the most movies?",
+   "sql": "SELECT d.name, COUNT(*) AS movie_count FROM directors d JOIN movies m ON m.director_id = d.id GROUP BY d.id, d.name ORDER BY movie_count DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "How many reviews awarded exactly 5 stars?",
+   "sql": "SELECT COUNT(*) FROM reviews WHERE stars = 5",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "How many movies were released after 2008?",
+   "sql": "SELECT COUNT(*) FROM movies WHERE year > 2008",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "Count reviews for each star rating, sorted by stars from highest to lowest.",
+   "sql": "SELECT stars, COUNT(*) AS review_count FROM reviews GROUP BY stars ORDER BY stars DESC",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "Which movie has the highest rating?",
+   "sql": "SELECT title FROM movies ORDER BY rating DESC LIMIT 1",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "Which movies have received both a 1-star and a 5-star review?",
+   "sql": "SELECT m.title FROM movies m JOIN reviews r ON r.movie_id = m.id GROUP BY m.id, m.title HAVING SUM(CASE WHEN r.stars = 1 THEN 1 ELSE 0 END) > 0 AND SUM(CASE WHEN r.stars = 5 THEN 1 ELSE 0 END) > 0",
+   "level": "hard"
+  },
+  {
+   "db": "movies",
+   "question": "For each director, show the average rating of their movies, but only include directors whose movies average above 4.5.",
+   "sql": "SELECT d.name, AVG(m.rating) AS avg_rating FROM directors d JOIN movies m ON d.id = m.director_id GROUP BY d.id, d.name HAVING AVG(m.rating) > 4.5",
+   "level": "hard"
+  },
+  {
+   "db": "movies",
+   "question": "What is the average rating for Action movies?",
+   "sql": "SELECT AVG(rating) FROM movies WHERE genre = 'Action'",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "Show the top three highest-rated Comedy movies.",
+   "sql": "SELECT title, rating FROM movies WHERE genre = 'Comedy' ORDER BY rating DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "Which Spanish directors have directed a Comedy movie? Show director name and movie title.",
+   "sql": "SELECT d.name, m.title FROM directors d JOIN movies m ON m.director_id = d.id WHERE d.country = 'Spain' AND m.genre = 'Comedy'",
+   "level": "hard"
+  },
+  {
+   "db": "movies",
+   "question": "For each director, what is the average rating of their movies?",
+   "sql": "SELECT d.name, AVG(m.rating) AS avg_rating FROM directors d JOIN movies m ON m.director_id = d.id GROUP BY d.id, d.name",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "Count reviews per movie title.",
+   "sql": "SELECT m.title, COUNT(r.id) AS review_count FROM movies m JOIN reviews r ON r.movie_id = m.id GROUP BY m.id, m.title",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "Which movies have a rating higher than the average rating of all movies?",
+   "sql": "SELECT title, rating FROM movies WHERE rating > (SELECT AVG(rating) FROM movies)",
+   "level": "hard"
+  },
+  {
+   "db": "movies",
+   "question": "What are the titles of movies from 2010 or later, sorted alphabetically?",
+   "sql": "SELECT title FROM movies WHERE year >= 2010 ORDER BY title",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "How many Comedy movies are in the database?",
+   "sql": "SELECT COUNT(*) AS comedy_count FROM movies WHERE genre = 'Comedy'",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "List movie titles together with their directors' names, ordered by movie year.",
+   "sql": "SELECT m.title, d.name FROM movies m JOIN directors d ON m.director_id = d.id ORDER BY m.year",
+   "level": "medium"
+  },
+  {
+   "db": "movies",
+   "question": "List review IDs and stars for reviews with fewer than 3 stars, highest stars first.",
+   "sql": "SELECT id, stars FROM reviews WHERE stars < 3 ORDER BY stars DESC",
+   "level": "easy"
+  },
+  {
+   "db": "movies",
+   "question": "Which movies have an average review rating of at least 4 stars, showing title and average rating?",
+   "sql": "SELECT m.title, AVG(r.stars) AS avg_stars FROM movies m JOIN reviews r ON m.id = r.movie_id GROUP BY m.id, m.title HAVING AVG(r.stars) >= 4 ORDER BY avg_stars DESC",
+   "level": "hard"
+  },
+  {
+   "db": "sports",
+   "question": "How many players are listed as goalkeepers?",
+   "sql": "SELECT COUNT(*) AS goalkeeper_count FROM players WHERE position = 'Goalkeeper'",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "Which matches were played in the 2023 season?",
+   "sql": "SELECT * FROM matches WHERE season = 2023 ORDER BY id",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "List the home team names for matches where the home team won, with scores and season.",
+   "sql": "SELECT t.name AS home_team, m.home_score, m.away_score, m.season FROM matches m JOIN teams t ON m.home_team_id = t.id WHERE m.home_score > m.away_score",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "List player names and ages for players aged 30 or older, oldest first.",
+   "sql": "SELECT name, age FROM players WHERE age >= 30 ORDER BY age DESC",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "List the top 3 oldest players with their positions and ages.",
+   "sql": "SELECT name, position, age FROM players ORDER BY age DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "How many matches were played in each season?",
+   "sql": "SELECT season, COUNT(*) AS match_count FROM matches GROUP BY season ORDER BY season",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "Which teams scored more than 5 total goals across all matches, counting both home and away goals?",
+   "sql": "SELECT t.name, SUM(g.goals_for) AS total_goals FROM teams t JOIN (SELECT home_team_id AS team_id, home_score AS goals_for FROM matches UNION ALL SELECT away_team_id, away_score FROM matches) AS g ON g.team_id = t.id GROUP BY t.id, t.name HAVING SUM(g.goals_for) > 5",
+   "level": "hard"
+  },
+  {
+   "db": "sports",
+   "question": "For each team, how many matches did they play as the home team?",
+   "sql": "SELECT t.name, COUNT(m.id) AS home_matches FROM teams t LEFT JOIN matches m ON m.home_team_id = t.id GROUP BY t.id, t.name ORDER BY t.name",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "How many matches finished as a draw?",
+   "sql": "SELECT COUNT(*) AS draw_count FROM matches WHERE home_score = away_score",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "What is the total number of goals scored by players younger than 25?",
+   "sql": "SELECT SUM(goals) AS total_goals FROM players WHERE age < 25",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "What is the average age of all players?",
+   "sql": "SELECT AVG(age) AS average_age FROM players",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "Show match details for games where both teams scored at least one goal, including both team names.",
+   "sql": "SELECT h.name AS home_team, a.name AS away_team, m.home_score, m.away_score, m.season FROM matches m JOIN teams h ON m.home_team_id = h.id JOIN teams a ON m.away_team_id = a.id WHERE m.home_score > 0 AND m.away_score > 0",
+   "level": "hard"
+  },
+  {
+   "db": "sports",
+   "question": "Which teams have more total player goals than the average team's total player goals?",
+   "sql": "SELECT t.name, SUM(p.goals) AS total_goals FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name HAVING SUM(p.goals) > (SELECT AVG(team_total) FROM (SELECT SUM(p2.goals) AS team_total FROM players p2 GROUP BY p2.team_id))",
+   "level": "hard"
+  },
+  {
+   "db": "sports",
+   "question": "Find teams whose players have scored more than 10 goals in total.",
+   "sql": "SELECT t.name, SUM(p.goals) AS total_goals FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name HAVING SUM(p.goals) > 10",
+   "level": "hard"
+  },
+  {
+   "db": "sports",
+   "question": "What is the average age of players by position?",
+   "sql": "SELECT position, AVG(age) AS average_age FROM players GROUP BY position ORDER BY position",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "What are the names of players who have scored fewer than 10 goals?",
+   "sql": "SELECT name FROM players WHERE goals < 10",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "Find the team with the highest average player age among teams that have at least two players.",
+   "sql": "SELECT t.name, AVG(p.age) AS avg_age FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name HAVING COUNT(p.id) >= 2 ORDER BY avg_age DESC LIMIT 1",
+   "level": "hard"
+  },
+  {
+   "db": "sports",
+   "question": "Show the three most recent seasons in the matches table, with the number of matches played in each.",
+   "sql": "SELECT season, COUNT(*) AS matches_played FROM matches GROUP BY season ORDER BY season DESC LIMIT 3",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "Show each player's name alongside their team's name, for players under 25.",
+   "sql": "SELECT p.name AS player_name, t.name AS team_name FROM players p JOIN teams t ON p.team_id = t.id WHERE p.age < 25",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "List players who are older than the average age of all players.",
+   "sql": "SELECT name, age FROM players WHERE age > (SELECT AVG(age) FROM players)",
+   "level": "hard"
+  },
+  {
+   "db": "sports",
+   "question": "Which teams have at least one player and also played a match in 2023?",
+   "sql": "SELECT DISTINCT t.name FROM teams t JOIN players p ON p.team_id = t.id JOIN matches m ON (m.home_team_id = t.id OR m.away_team_id = t.id) WHERE m.season = 2023",
+   "level": "hard"
+  },
+  {
+   "db": "sports",
+   "question": "Which teams are based in Lagos?",
+   "sql": "SELECT name FROM teams WHERE city = 'Lagos'",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "Show each team name, city, and the number of matches it played as home team.",
+   "sql": "SELECT t.name, t.city, COUNT(m.id) AS home_matches FROM teams t LEFT JOIN matches m ON m.home_team_id = t.id GROUP BY t.id, t.name, t.city",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "Which players have scored more goals than the average player?",
+   "sql": "SELECT name, goals FROM players WHERE goals > (SELECT AVG(goals) FROM players)",
+   "level": "hard"
+  },
+  {
+   "db": "sports",
+   "question": "Which players are Goalkeepers and younger than 30?",
+   "sql": "SELECT name FROM players WHERE position = 'Goalkeeper' AND age < 30",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "List team names alphabetically.",
+   "sql": "SELECT name FROM teams ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "Which teams have total player goals over 20?",
+   "sql": "SELECT t.name, SUM(p.goals) AS total_goals FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name HAVING SUM(p.goals) > 20",
+   "level": "hard"
+  },
+  {
+   "db": "sports",
+   "question": "Show all matches from the 2024 season, newest first by id.",
+   "sql": "SELECT * FROM matches WHERE season = 2024 ORDER BY id DESC",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "How many players does each team have?",
+   "sql": "SELECT t.name, COUNT(p.id) AS player_count FROM teams t LEFT JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "What is the total number of goals scored by players on each team?",
+   "sql": "SELECT t.name, SUM(p.goals) AS total_goals FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "Which team has the highest total number of goals scored by its players?",
+   "sql": "SELECT t.name, SUM(p.goals) AS total_goals FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name ORDER BY total_goals DESC LIMIT 1",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "What are the names and ages of players older than 30?",
+   "sql": "SELECT name, age FROM players WHERE age > 30 ORDER BY age DESC",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "How many players are listed as Defenders?",
+   "sql": "SELECT COUNT(*) AS defender_count FROM players WHERE position = 'Defender'",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "For each team, how many players are currently in the roster?",
+   "sql": "SELECT t.name, COUNT(p.id) AS player_count FROM teams t LEFT JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name ORDER BY t.name",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "Which players play for teams founded before 1920?",
+   "sql": "SELECT p.name, t.name AS team_name FROM players p JOIN teams t ON p.team_id = t.id WHERE t.founded < 1920",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "For each team, what was their highest home score in any match?",
+   "sql": "SELECT t.name, MAX(m.home_score) AS highest_home_score FROM teams t LEFT JOIN matches m ON m.home_team_id = t.id GROUP BY t.id, t.name ORDER BY highest_home_score DESC",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "Which teams have won at least one match as the home team?",
+   "sql": "SELECT t.name FROM teams t WHERE EXISTS (SELECT 1 FROM matches m WHERE m.home_team_id = t.id AND m.home_score > m.away_score)",
+   "level": "hard"
+  },
+  {
+   "db": "sports",
+   "question": "Which players have scored more goals than the player named Maya Garcia?",
+   "sql": "SELECT name, goals FROM players WHERE goals > (SELECT goals FROM players WHERE name = 'Maya Garcia')",
+   "level": "hard"
+  },
+  {
+   "db": "sports",
+   "question": "For each match, show the home team name, away team name, and season.",
+   "sql": "SELECT h.name AS home_team, a.name AS away_team, m.season FROM matches m JOIN teams h ON m.home_team_id = h.id JOIN teams a ON m.away_team_id = a.id",
+   "level": "hard"
+  },
+  {
+   "db": "sports",
+   "question": "What is the total goals scored by players for each team?",
+   "sql": "SELECT t.name, SUM(p.goals) AS total_goals FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name ORDER BY total_goals DESC",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "List the five most recent matches by season.",
+   "sql": "SELECT id, home_team_id, away_team_id, home_score, away_score, season FROM matches ORDER BY season DESC LIMIT 5",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "For each player, show the player name and their team name.",
+   "sql": "SELECT p.name AS player_name, t.name AS team_name FROM players p JOIN teams t ON p.team_id = t.id",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "What is the average age of players for each team, including only teams that have players?",
+   "sql": "SELECT t.name, AVG(p.age) AS average_age FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name ORDER BY t.name",
+   "level": "medium"
+  },
+  {
+   "db": "sports",
+   "question": "List team names alphabetically for teams founded after 1950.",
+   "sql": "SELECT name FROM teams WHERE founded > 1950 ORDER BY name",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "Show all players ordered by goals from highest to lowest.",
+   "sql": "SELECT name, goals FROM players ORDER BY goals DESC",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "Which teams were founded before 1900?",
+   "sql": "SELECT name, city, founded FROM teams WHERE founded < 1900 ORDER BY founded",
+   "level": "easy"
+  },
+  {
+   "db": "sports",
+   "question": "Which seasons had more than 10 matches?",
+   "sql": "SELECT season, COUNT(*) AS match_count FROM matches GROUP BY season HAVING COUNT(*) > 10",
+   "level": "hard"
+  },
+  {
+   "db": "sports",
+   "question": "Which teams were founded before 1920?",
+   "sql": "SELECT name, founded FROM teams WHERE founded < 1920 ORDER BY founded",
+   "level": "easy"
+  }
+ ]
+}

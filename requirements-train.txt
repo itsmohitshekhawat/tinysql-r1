@@ -1,0 +1,7 @@
+# For training and evaluation (not needed to run the demo page)
+torch==2.15.0
+transformers==5.23.0
+peft==0.21.3
+accelerate==1.16.0
+openai==3.55.1
+pytest==9.2.0

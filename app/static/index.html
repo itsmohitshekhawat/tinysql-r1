@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TinySQL-R1: a small model trained with reinforcement learning</title>
+<meta name="description" content="A 0.5B-parameter model trained with GRPO to write SQL, using only a reward that can be checked by running the query. Compared live with its untrained self and a frontier model.">
+<meta property="og:title" content="TinySQL-R1: a small model trained with reinforcement learning">
+<meta property="og:description" content="GRPO from scratch on a laptop: text-to-SQL with a verifiable reward, compared live against the untrained model and a frontier model.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cellipse cx='16' cy='8' rx='11' ry='4.5' fill='none' stroke='%236d3fc4' stroke-width='3'/%3E%3Cpath d='M5 8v16c0 2.5 5 4.5 11 4.5s11-2 11-4.5V8M5 16c0 2.5 5 4.5 11 4.5s11-2 11-4.5' fill='none' stroke='%236d3fc4' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brandline"><a class="brand" href="/">Tiny<b>SQL</b>-R1</a> <span class="by">by Mohit Shekhawat</span></div>
+  <nav><a href="#results" class="hide-sm">Results</a><a href="#hacked" class="hide-sm">Reward hacking</a><a href="#how" class="hide-sm">How it works</a><a class="ghnav" href="https://github.com/itsmohitshekhawat/tinysql-r1" aria-label="TinySQL-R1 on GitHub"><svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> <span>GitHub</span></a></nav>
+</div></header>
+
+<main>
+<div class="wrap">
+  <div class="hero">
+    <h1>A tiny model that learned SQL from a score, not from answers.</h1>
+    <p>A 0.5-billion-parameter model was trained with reinforcement learning (GRPO). It was never shown a correct query: it wrote several attempts, each was run on a real database, and it was told only whether the rows were right. Ask a question and compare it with its untrained self and a frontier model. <span id="livenote"></span></p>
+  </div>
+
+  <div class="picker" id="dbs" role="tablist" aria-label="Database"></div>
+  <details class="schema"><summary id="schematitle">Show the tables</summary><pre id="schema"></pre></details>
+  <form class="ask" id="form" style="margin-top:10px">
+    <input id="q" maxlength="300" autocomplete="off" placeholder="Ask a question about this database" aria-label="Your question">
+    <button class="btn" id="go" type="submit">Ask</button>
+  </form>
+  <div class="chips" id="examples"></div>
+  <div class="quota" id="quota"></div>
+
+  <div class="cols">
+    <div class="card model" data-m="base"><h2>Small model, untrained <span class="tag" hidden></span></h2><p class="who">Qwen2.5-0.5B as downloaded</p><div class="sql empty">The SQL appears here.</div><div class="out"></div><div class="stats"></div></div>
+    <div class="card model" data-m="trained"><h2>Small model, GRPO-trained <span class="tag" hidden></span></h2><p class="who">Same weights + the trained adapter</p><div class="sql empty">The SQL appears here.</div><div class="out"></div><div class="stats"></div></div>
+    <div class="card model" data-m="frontier"><h2>Frontier model <span class="tag" hidden></span></h2><p class="who">DeepSeek V4.1 Flash over its API</p><div class="sql empty">The SQL appears here.</div><div class="out"></div><div class="stats"></div></div>
+  </div>
+</div>
+
+<section class="block" id="results"><div class="wrap">
+  <h3>Measured results</h3>
+  <p id="resultsintro">Execution accuracy: the share of test questions where the model's query returns the right rows.</p>
+  <div class="two">
+    <div class="card"><h2>Databases seen in training (new questions)</h2><div class="bars" id="bars-seen"></div></div>
+    <div class="card"><h2>Databases never seen in training</h2><div class="bars" id="bars-unseen"></div></div>
+  </div>
+  <div class="card" style="margin-top:20px"><h2>Training curve (GRPO)</h2><div id="curve"></div>
+    <p class="hint">Left to right: training steps. Line: share of sampled queries that returned the right rows, averaged over 25 steps. Dots: accuracy on a held-back development set, with greedy decoding.</p></div>
+  <div class="card scroll" style="margin-top:20px"><h2>Details</h2><table class="metrics" id="table"></table></div>
+  <div class="card" style="margin-top:20px"><h2>What the numbers say</h2><ul class="res" style="font-size:15px;padding-left:20px" id="takeaways"></ul></div>
+</div></section>
+
+<section class="block" id="hacked" hidden><div class="wrap">
+  <h3>The first run cheated</h3>
+  <p id="hackintro"></p>
+  <div class="two">
+    <div class="card"><h2>What the model learned to write</h2><p class="who" id="hackq"></p><div class="sql" id="hacksql"></div>
+      <p class="hint">The first scoring rule accepted any subset of the reference columns. One easy column with the right number of rows got full reward.</p></div>
+    <div class="card"><h2>The same run, two scoring rules</h2><div class="bars" id="hackbars"></div>
+      <p class="hint">Fix: every question now lists the columns it really asks for, and an answer must contain all of them. The results above come from a new training run with the fixed reward.</p></div>
+  </div>
+</div></section>
+
+<section class="block" id="how"><div class="wrap">
+  <h3>How it works</h3>
+  <p>GRPO (Group Relative Policy Optimization) is the reinforcement-learning method behind DeepSeek-R1. The training loop here is written from scratch in PyTorch, about 150 lines, and ran on a laptop.</p>
+  <ol class="steps">
+    <li><b>Sample a group</b>For each question the model writes 8 different queries by sampling.</li>
+    <li><b>Check, don't judge</b>Each query is run on the database. Right rows with the columns the question asks for: reward 1. Runs but wrong: 0.2. Fails: 0.</li>
+    <li><b>Compare inside the group</b>Each attempt's advantage is its reward minus the group average, divided by the spread. No extra "critic" network.</li>
+    <li><b>Nudge the model</b>Tokens of better-than-average attempts become more likely, the others less. Only a small LoRA adapter is trained.</li>
+  </ol>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <span>TinySQL-R1 · a project by Mohit Shekhawat</span>
+  <span>Databases are synthetic. Queries run read-only.</span>
+</div></footer>
+<script src="/static/app.js"></script>
+</body>
+</html>

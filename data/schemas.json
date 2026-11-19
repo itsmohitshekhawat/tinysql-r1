@@ -1,0 +1,74 @@
+{
+ "shop": {
+  "ddl": "CREATE TABLE customers (id INTEGER PRIMARY KEY, name TEXT, city TEXT, signup_year INTEGER);\nCREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, category TEXT, price REAL);\nCREATE TABLE orders (id INTEGER PRIMARY KEY, customer_id INTEGER REFERENCES customers(id), product_id INTEGER REFERENCES products(id), quantity INTEGER, order_date TEXT);",
+  "held_out": false,
+  "rows": {
+   "customers": 25,
+   "products": 16,
+   "orders": 60
+  }
+ },
+ "school": {
+  "ddl": "CREATE TABLE students (id INTEGER PRIMARY KEY, name TEXT, grade_level INTEGER, age INTEGER);\nCREATE TABLE courses (id INTEGER PRIMARY KEY, title TEXT, department TEXT, credits INTEGER);\nCREATE TABLE enrollments (id INTEGER PRIMARY KEY, student_id INTEGER REFERENCES students(id), course_id INTEGER REFERENCES courses(id), score INTEGER);",
+  "held_out": false,
+  "rows": {
+   "students": 30,
+   "courses": 10,
+   "enrollments": 80
+  }
+ },
+ "library": {
+  "ddl": "CREATE TABLE authors (id INTEGER PRIMARY KEY, name TEXT, country TEXT);\nCREATE TABLE books (id INTEGER PRIMARY KEY, title TEXT, author_id INTEGER REFERENCES authors(id), year INTEGER, genre TEXT, pages INTEGER);\nCREATE TABLE loans (id INTEGER PRIMARY KEY, book_id INTEGER REFERENCES books(id), member_name TEXT, loan_date TEXT, returned INTEGER);",
+  "held_out": false,
+  "rows": {
+   "authors": 12,
+   "books": 28,
+   "loans": 50
+  }
+ },
+ "hospital": {
+  "ddl": "CREATE TABLE doctors (id INTEGER PRIMARY KEY, name TEXT, specialty TEXT, years_experience INTEGER);\nCREATE TABLE patients (id INTEGER PRIMARY KEY, name TEXT, age INTEGER, city TEXT);\nCREATE TABLE appointments (id INTEGER PRIMARY KEY, doctor_id INTEGER REFERENCES doctors(id), patient_id INTEGER REFERENCES patients(id), date TEXT, fee REAL);",
+  "held_out": false,
+  "rows": {
+   "doctors": 12,
+   "patients": 30,
+   "appointments": 70
+  }
+ },
+ "flights": {
+  "ddl": "CREATE TABLE airlines (id INTEGER PRIMARY KEY, name TEXT, country TEXT);\nCREATE TABLE airports (code TEXT PRIMARY KEY, city TEXT, country TEXT);\nCREATE TABLE flights (id INTEGER PRIMARY KEY, airline_id INTEGER REFERENCES airlines(id), origin TEXT REFERENCES airports(code), destination TEXT REFERENCES airports(code), duration_min INTEGER, price REAL);",
+  "held_out": false,
+  "rows": {
+   "airlines": 6,
+   "airports": 8,
+   "flights": 60
+  }
+ },
+ "hr": {
+  "ddl": "CREATE TABLE departments (id INTEGER PRIMARY KEY, name TEXT, location TEXT);\nCREATE TABLE employees (id INTEGER PRIMARY KEY, name TEXT, department_id INTEGER REFERENCES departments(id), salary INTEGER, hire_year INTEGER, title TEXT);\nCREATE TABLE projects (id INTEGER PRIMARY KEY, name TEXT, department_id INTEGER REFERENCES departments(id), budget INTEGER);",
+  "held_out": false,
+  "rows": {
+   "departments": 6,
+   "employees": 40,
+   "projects": 12
+  }
+ },
+ "movies": {
+  "ddl": "CREATE TABLE directors (id INTEGER PRIMARY KEY, name TEXT, country TEXT);\nCREATE TABLE movies (id INTEGER PRIMARY KEY, title TEXT, director_id INTEGER REFERENCES directors(id), year INTEGER, genre TEXT, rating REAL);\nCREATE TABLE reviews (id INTEGER PRIMARY KEY, movie_id INTEGER REFERENCES movies(id), reviewer TEXT, stars INTEGER);",
+  "held_out": true,
+  "rows": {
+   "directors": 10,
+   "movies": 30,
+   "reviews": 70
+  }
+ },
+ "sports": {
+  "ddl": "CREATE TABLE teams (id INTEGER PRIMARY KEY, name TEXT, city TEXT, founded INTEGER);\nCREATE TABLE players (id INTEGER PRIMARY KEY, name TEXT, team_id INTEGER REFERENCES teams(id), position TEXT, age INTEGER, goals INTEGER);\nCREATE TABLE matches (id INTEGER PRIMARY KEY, home_team_id INTEGER REFERENCES teams(id), away_team_id INTEGER REFERENCES teams(id), home_score INTEGER, away_score INTEGER, season INTEGER);",
+  "held_out": true,
+  "rows": {
+   "teams": 8,
+   "players": 40,
+   "matches": 50
+  }
+ }
+}

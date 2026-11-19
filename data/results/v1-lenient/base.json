@@ -1,0 +1,1772 @@
+{
+ "summary": {
+  "name": "base",
+  "seconds_per_question": 0.528,
+  "cost_per_question_usd": 0.0,
+  "test_seen": 0.364,
+  "test_seen_easy": 0.412,
+  "test_seen_medium": 0.375,
+  "test_seen_hard": 0.296,
+  "test_unseen": 0.327,
+  "test_unseen_easy": 0.286,
+  "test_unseen_medium": 0.486,
+  "test_unseen_hard": 0.179,
+  "all": 0.343,
+  "all_easy": 0.348,
+  "all_medium": 0.451,
+  "all_hard": 0.236,
+  "runs_without_error": 0.657
+ },
+ "rows": [
+  {
+   "db": "shop",
+   "question": "Which orders were placed on 2022-09-09?",
+   "sql": "SELECT id, customer_id, product_id FROM orders WHERE order_date = '2022-09-09'",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT o.id, p.name, o.quantity, o.order_date\nFROM orders o\nJOIN products p ON o.product_id = p.id\nWHERE strftime('%Y', o.order_date) = '2022' AND strftime('%Y-%m-%d', o.order_date) = '2022-09-09'",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "shop",
+   "question": "List each customer's name and number of orders, with the busiest customers first.",
+   "sql": "SELECT c.name, COUNT(o.id) FROM customers c JOIN orders o ON o.customer_id = c.id GROUP BY c.id ORDER BY COUNT(o.id) DESC",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT c.name, COUNT(o.id) AS num_orders\nFROM customers c\nJOIN orders o ON c.id = o.customer_id\nGROUP BY c.id\nORDER BY num_orders DESC",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "shop",
+   "question": "How many customers are based in Mumbai?",
+   "sql": "SELECT COUNT(*) FROM customers WHERE city = 'Mumbai'",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT COUNT(DISTINCT c.id) AS num_customers\nFROM customers c\nJOIN orders o ON c.id = o.customer_id\nWHERE c.city = 'Mumbai'",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "shop",
+   "question": "Which products have been ordered by more than one distinct customer?",
+   "sql": "SELECT p.name FROM products p JOIN orders o ON p.id = o.product_id GROUP BY p.id, p.name HAVING COUNT(DISTINCT o.customer_id) > 1",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT p.name\nFROM products p\nJOIN (\n    SELECT customer_id, COUNT(*) as count\n    FROM orders\n    GROUP BY customer_id\n    HAVING count > 1\n) subquery ON p.id = subquery.customer_id",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "shop",
+   "question": "Which customers have spent more than 500 in total across their orders?",
+   "sql": "SELECT c.name FROM customers c JOIN orders o ON o.customer_id = c.id JOIN products p ON p.id = o.product_id GROUP BY c.id HAVING SUM(o.quantity * p.price) > 500",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT c.name \nFROM customers c\nJOIN (\n    SELECT customer_id, SUM(quantity * price) AS total_spent\n    FROM orders o\n    JOIN products p ON o.product_id = p.id\n    GROUP BY o.customer_id\n    HAVING SUM(quantity * price) > 500\n) subquery ON c.id = subquery.customer_id",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "shop",
+   "question": "For each city, show how many customers signed up after 2020 and how many orders those customers placed.",
+   "sql": "SELECT c.city, COUNT(DISTINCT c.id) AS customers_after_2020, COUNT(o.id) AS orders_from_them FROM customers c LEFT JOIN orders o ON o.customer_id = c.id WHERE c.signup_year > 2020 GROUP BY c.city",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT c.city, COUNT(o.id) AS num_customers_placed\nFROM customers c\nJOIN orders o ON c.id = o.customer_id\nWHERE strftime('%Y', o.order_date) > '2020'\nGROUP BY c.city",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "shop",
+   "question": "List all customers from Mumbai, alphabetized by name.",
+   "sql": "SELECT name FROM customers WHERE city = 'Mumbai' ORDER BY name",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT c.name \nFROM customers c \nJOIN orders o ON c.id = o.customer_id \nWHERE c.city = 'Mumbai' \nORDER BY c.name",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "shop",
+   "question": "Show order IDs and product categories for orders placed in 2022, newest order first.",
+   "sql": "SELECT o.id, p.category, o.order_date FROM orders o JOIN products p ON p.id = o.product_id WHERE o.order_date LIKE '2022%' ORDER BY o.order_date DESC",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT o.id, p.category \nFROM orders o \nJOIN (\n    SELECT id, MAX(order_date) as max_order_date \n    FROM orders \n    WHERE YEAR(order_date) = 2022 \n    GROUP BY id\n) p ON o.id = p.id",
+   "correct": false,
+   "error": "no such function: YEAR"
+  },
+  {
+   "db": "shop",
+   "question": "Find categories with an average product price above 100 and at least two products.",
+   "sql": "SELECT category, AVG(price) AS avg_price, COUNT(*) AS product_count FROM products GROUP BY category HAVING AVG(price) > 100 AND COUNT(*) >= 2",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT T2.category\nFROM (\n    SELECT T1.category, AVG(T3.price) AS avg_price\n    FROM orders AS T1\n    JOIN products AS T2 ON T1.product_id = T2.id\n    GROUP BY T1.category\n    HAVING COUNT(DISTINCT T1.quantity) >= 2 AND AVG(T3.price) > 100\n) AS T3\nJOIN products AS T4 ON T3.category =",
+   "correct": false,
+   "error": "incomplete input"
+  },
+  {
+   "db": "shop",
+   "question": "Which product generated the highest total revenue from orders, where revenue is quantity times price?",
+   "sql": "SELECT p.name, SUM(o.quantity * p.price) AS revenue FROM orders o JOIN products p ON p.id = o.product_id GROUP BY p.id, p.name ORDER BY revenue DESC LIMIT 1",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT p.name AS product_name, SUM(o.quantity * p.price) AS total_revenue\nFROM products p\nJOIN orders o ON p.id = o.product_id\nGROUP BY p.id\nORDER BY total_revenue DESC\nLIMIT 1",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "shop",
+   "question": "How many electronics products are in the product table?",
+   "sql": "SELECT COUNT(*) FROM products WHERE category = 'Electronics'",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT COUNT(*) FROM products WHERE category = 'electronics'",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "school",
+   "question": "Which students have no enrollments at all?",
+   "sql": "SELECT s.name FROM students s WHERE NOT EXISTS (SELECT 1 FROM enrollments e WHERE e.student_id = s.id)",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT s.name \nFROM students s \nWHERE s.id NOT IN (\n    SELECT e.student_id \n    FROM enrollments e \n    WHERE e.student_id IS NULL\n)",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "school",
+   "question": "Find students who are enrolled in both course ID 1 and course ID 3.",
+   "sql": "SELECT s.name FROM students s JOIN enrollments e1 ON s.id = e1.student_id AND e1.course_id = 1 JOIN enrollments e2 ON s.id = e2.student_id AND e2.course_id = 3",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT s.name \nFROM students s \nJOIN enrollments e ON s.id = e.student_id \nJOIN courses c1 ON e.course_id = c1.id \nJOIN courses c2 ON e.course_id = c2.id \nWHERE c1.title = 'Math' AND c2.title = 'Science'",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "school",
+   "question": "How many courses are worth 3 or more credits?",
+   "sql": "SELECT COUNT(*) AS course_count FROM courses WHERE credits >= 3",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT COUNT(*) FROM enrollments e JOIN courses c ON e.course_id = c.id WHERE c.credits >= 3",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "school",
+   "question": "Which student names begin with the letter M?",
+   "sql": "SELECT name FROM students WHERE name LIKE 'M%'",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT s.name \nFROM students s \nJOIN enrollments e ON s.id = e.student_id \nJOIN courses c ON e.course_id = c.id \nWHERE s.name LIKE 'M%'",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "school",
+   "question": "Which courses are worth more than 2 credits?",
+   "sql": "SELECT title, credits FROM courses WHERE credits > 2",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT c.title\nFROM courses c\nJOIN enrollments e ON c.id = e.course_id\nWHERE e.score > 2",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "school",
+   "question": "Which courses are not in the Math department?",
+   "sql": "SELECT title, department FROM courses WHERE department <> 'Math' ORDER BY title",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT c.title\nFROM courses c\nJOIN enrollments e ON c.id = e.course_id\nWHERE c.department != 'Math'",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "school",
+   "question": "List departments that have more than one course and an average credit value of at least 3.",
+   "sql": "SELECT department FROM courses GROUP BY department HAVING COUNT(*) > 1 AND AVG(credits) >= 3",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT T2.department \nFROM enrollments AS T1 \nJOIN courses AS T2 ON T1.course_id = T2.id \nWHERE T1.score >= 3 AND COUNT(T1.credits) > 1",
+   "correct": false,
+   "error": "no such column: T1.credits"
+  },
+  {
+   "db": "school",
+   "question": "Show the scores for Algebra alongside the course title.",
+   "sql": "SELECT c.title, e.score FROM courses c JOIN enrollments e ON c.id = e.course_id WHERE c.title = 'Algebra'",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT e.course_title, e.score\nFROM enrollments e\nJOIN courses c ON e.course_id = c.id\nWHERE c.title = 'Algebra'",
+   "correct": false,
+   "error": "no such column: e.course_title"
+  },
+  {
+   "db": "school",
+   "question": "What are the names and ages of students older than 14?",
+   "sql": "SELECT name, age FROM students WHERE age > 14 ORDER BY age",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT s.name, s.age \nFROM students s \nWHERE s.age > 14",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "school",
+   "question": "For each student, show their name and how many enrollments they have.",
+   "sql": "SELECT s.name, COUNT(e.id) AS enrollment_count FROM students s LEFT JOIN enrollments e ON s.id = e.student_id GROUP BY s.id, s.name",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT s.name, COUNT(e.id) AS num_enrollments\nFROM students s\nJOIN enrollments e ON s.id = e.student_id\nGROUP BY s.id",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "school",
+   "question": "For each department, show the number of distinct students enrolled in its courses and the average score, but only departments with at least two enrollments.",
+   "sql": "SELECT c.department, COUNT(DISTINCT e.student_id) AS student_count, AVG(e.score) AS average_score FROM courses c JOIN enrollments e ON c.id = e.course_id GROUP BY c.department HAVING COUNT(e.id) >= 2",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT \n    d.department,\n    COUNT(DISTINCT s.id) AS num_students,\n    AVG(e.score) AS avg_score\nFROM \n    students s\nJOIN \n    enrollments e ON s.id = e.student_id\nJOIN \n    courses c ON e.course_id = c.id\nGROUP BY \n    d.department\nHAVING \n    COUNT(DISTINCT s.id) >= 2",
+   "correct": false,
+   "error": "no such column: d.department"
+  },
+  {
+   "db": "school",
+   "question": "Show the names of students enrolled in course ID 1.",
+   "sql": "SELECT s.name FROM enrollments e JOIN students s ON e.student_id = s.id WHERE e.course_id = 1",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT s.name FROM students AS s JOIN enrollments AS e ON s.id = e.student_id JOIN courses AS c ON e.course_id = c.id WHERE c.id = 1",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "school",
+   "question": "Which students have no enrollment records at all?",
+   "sql": "SELECT s.name FROM students s WHERE NOT EXISTS (SELECT 1 FROM enrollments e WHERE e.student_id = s.id) ORDER BY s.name",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT s.name \nFROM students s \nWHERE s.id NOT IN (\n    SELECT e.student_id \n    FROM enrollments e \n    WHERE e.course_id IS NULL\n)",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "school",
+   "question": "How many enrollments does each course have?",
+   "sql": "SELECT course_id, COUNT(*) AS enrollment_count FROM enrollments GROUP BY course_id",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT c.title AS CourseTitle, COUNT(e.id) AS EnrollmentCount\nFROM courses c\nJOIN enrollments e ON c.id = e.course_id\nGROUP BY c.title",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "school",
+   "question": "List the departments that have courses, without duplicates.",
+   "sql": "SELECT DISTINCT department FROM courses ORDER BY department",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT T2.department FROM enrollments AS T1 JOIN courses AS T2 ON T1.course_id = T2.id GROUP BY T2.department HAVING COUNT(T1.student_id) > 1",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "school",
+   "question": "Find students who scored higher than the overall average enrollment score.",
+   "sql": "SELECT s.name, e.score FROM students s JOIN enrollments e ON s.id = e.student_id WHERE e.score > (SELECT AVG(score) FROM enrollments)",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT s.name \nFROM students s \nJOIN (\n    SELECT id, AVG(score) as avg_score\n    FROM enrollments\n    GROUP BY id\n) e ON s.id = e.id\nWHERE e.avg_score > (SELECT AVG(score) FROM enrollments)",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "school",
+   "question": "Show the top three enrollment scores along with the student names.",
+   "sql": "SELECT s.name, e.score FROM students s JOIN enrollments e ON s.id = e.student_id ORDER BY e.score DESC LIMIT 3",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT e.score, s.name \nFROM enrollments e \nJOIN students s ON e.student_id = s.id \nORDER BY e.score DESC \nLIMIT 3",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "library",
+   "question": "How many loans are still marked as not returned?",
+   "sql": "SELECT COUNT(*) FROM loans WHERE returned = 0",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT COUNT(*) FROM loans WHERE returned = 0",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "library",
+   "question": "List Fantasy book titles together with their authors' names.",
+   "sql": "SELECT b.title, a.name FROM books b JOIN authors a ON b.author_id = a.id WHERE b.genre = 'Fantasy'",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT b.title, a.name \nFROM books AS b \nJOIN authors AS a ON b.author_id = a.id \nWHERE b.genre = 'Fantasy'",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "library",
+   "question": "List the member names for loans made in 2024.",
+   "sql": "SELECT member_name FROM loans WHERE loan_date LIKE '2024-%'",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT T1.member_name FROM loans AS T1 JOIN books AS T2 ON T1.book_id = T2.id WHERE T2.year = 2024",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "library",
+   "question": "Which books were published before 1970, oldest first?",
+   "sql": "SELECT title, year FROM books WHERE year < 1970 ORDER BY year",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT b.title \nFROM books AS b \nJOIN (\n    SELECT id \n    FROM loans \n    WHERE returned = 0 \n    ORDER BY loan_date ASC \n    LIMIT 1\n) AS l ON b.id = l.book_id \nWHERE b.year < 1970",
+   "correct": false,
+   "error": "no such column: l.book_id"
+  },
+  {
+   "db": "library",
+   "question": "What are the titles and page counts of books longer than 300 pages, longest first?",
+   "sql": "SELECT title, pages FROM books WHERE pages > 300 ORDER BY pages DESC",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT b.title, l.pages\nFROM books AS b\nJOIN loans AS l ON b.id = l.book_id\nWHERE b.pages > 300\nORDER BY b.pages DESC",
+   "correct": false,
+   "error": "no such column: l.pages"
+  },
+  {
+   "db": "library",
+   "question": "List all author names in alphabetical order.",
+   "sql": "SELECT name FROM authors ORDER BY name",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT a.name \nFROM authors a\nJOIN books b ON a.id = b.author_id",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "library",
+   "question": "What are the five longest books, including their page counts?",
+   "sql": "SELECT title, pages FROM books ORDER BY pages DESC LIMIT 5",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT b.title, l.pages\nFROM books AS b\nJOIN loans AS l ON b.id = l.book_id\nWHERE l.returned = 0\nORDER BY l.pages DESC\nLIMIT 5",
+   "correct": false,
+   "error": "no such column: l.pages"
+  },
+  {
+   "db": "library",
+   "question": "List every author's name and country, sorted by country and then name.",
+   "sql": "SELECT name, country FROM authors ORDER BY country, name",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT a.name AS AuthorName, a.country \nFROM authors a \nJOIN books b ON a.id = b.author_id \nORDER BY a.country ASC, a.name ASC",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "library",
+   "question": "How many authors come from each country?",
+   "sql": "SELECT country, COUNT(*) AS author_count FROM authors GROUP BY country",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT COUNT(DISTINCT T1.author_id) AS num_authors_per_country\nFROM authors AS T1\nJOIN books AS T2 ON T1.id = T2.author_id\nGROUP BY T1.country",
+   "correct": false,
+   "error": "no such column: T1.author_id"
+  },
+  {
+   "db": "library",
+   "question": "Which book was published earliest, and in what year?",
+   "sql": "SELECT title, year FROM books ORDER BY year ASC LIMIT 1",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT b.title AS BookTitle, l.year AS Year\nFROM books b\nJOIN loans l ON b.id = l.book_id\nWHERE l.returned = 0",
+   "correct": false,
+   "error": "no such column: l.year"
+  },
+  {
+   "db": "library",
+   "question": "List unreturned loans for Fantasy or Mystery books, including the member name and book title.",
+   "sql": "SELECT l.member_name, b.title, b.genre FROM loans l JOIN books b ON l.book_id = b.id WHERE l.returned = 0 AND b.genre IN ('Fantasy', 'Mystery')",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT T1.member_name, T2.title\nFROM loans AS T1\nJOIN books AS T2 ON T1.book_id = T2.id\nWHERE T2.genre IN ('Fantasy', 'Mystery')\n  AND T1.returned IS NULL",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "library",
+   "question": "Show the titles of Fantasy books, starting with the most recent.",
+   "sql": "SELECT title FROM books WHERE genre = 'Fantasy' ORDER BY year DESC",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT T1.title \nFROM books AS T1 \nJOIN loans AS T2 ON T1.id = T2.book_id \nWHERE T1.genre = 'Fantasy' \nORDER BY T2.loan_date DESC \nLIMIT 1",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "library",
+   "question": "How many authors in the database are from Norway?",
+   "sql": "SELECT COUNT(*) FROM authors WHERE country = 'Norway'",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT COUNT(DISTINCT a.id) FROM authors a JOIN books b ON a.id = b.author_id WHERE a.country = 'Norway'",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "library",
+   "question": "How many books does each author have in the library, including authors with none?",
+   "sql": "SELECT a.name, COUNT(b.id) AS book_count FROM authors a LEFT JOIN books b ON b.author_id = a.id GROUP BY a.id, a.name ORDER BY book_count DESC",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT a.name AS AuthorName, COUNT(b.id) AS NumberOfBooks\nFROM authors a\nJOIN books b ON a.id = b.author_id\nGROUP BY a.name\nHAVING COUNT(b.id) > 0",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "library",
+   "question": "What is the title and publication year of the book with id 2?",
+   "sql": "SELECT title, year FROM books WHERE id = 2",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT b.title, b.year FROM books AS b\nJOIN loans AS l ON b.id = l.book_id\nWHERE l.id = 2",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "library",
+   "question": "Which authors have written more than one book?",
+   "sql": "SELECT a.name, COUNT(*) AS book_count FROM authors a JOIN books b ON a.id = b.author_id GROUP BY a.id, a.name HAVING COUNT(*) > 1",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT a.name \nFROM authors a\nJOIN books b ON a.id = b.author_id\nGROUP BY a.id\nHAVING COUNT(b.id) > 1",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "library",
+   "question": "How many books in the catalog are listed as History?",
+   "sql": "SELECT COUNT(*) AS history_books FROM books WHERE genre = 'History'",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT COUNT(*) FROM books WHERE genre = 'History'",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "library",
+   "question": "Which authors have at least one book but none of their books have ever been loaned?",
+   "sql": "SELECT a.name FROM authors a JOIN books b ON a.id = b.author_id LEFT JOIN loans l ON b.id = l.book_id GROUP BY a.id, a.name HAVING COUNT(l.id) = 0",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT a.name \nFROM authors a \nJOIN books b ON a.id = b.author_id \nWHERE NOT EXISTS (\n    SELECT 1 \n    FROM loans l \n    WHERE l.book_id = b.id AND l.member_name = a.name\n)",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors have generated more than 500 in total appointment fees?",
+   "sql": "SELECT d.name, SUM(a.fee) AS total_fees FROM doctors d JOIN appointments a ON d.id = a.doctor_id GROUP BY d.id, d.name HAVING SUM(a.fee) > 500",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT d.name \nFROM doctors d\nJOIN (\n    SELECT doctor_id, SUM(fee) as total_fees\n    FROM appointments\n    GROUP BY doctor_id\n    HAVING SUM(fee) > 500\n) a ON d.id = a.doctor_id",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "hospital",
+   "question": "Which patients have never had an appointment?",
+   "sql": "SELECT name FROM patients WHERE id NOT IN (SELECT patient_id FROM appointments)",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT p.name\nFROM patients p\nJOIN appointments a ON p.id = a.patient_id\nWHERE a.date IS NULL",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors have treated more than one distinct patient?",
+   "sql": "SELECT d.name, COUNT(DISTINCT a.patient_id) AS patients_seen FROM appointments a JOIN doctors d ON d.id = a.doctor_id GROUP BY d.id HAVING COUNT(DISTINCT a.patient_id) > 1",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT d.name\nFROM doctors d\nJOIN (\n    SELECT doctor_id, COUNT(*) AS num_patients\n    FROM appointments\n    GROUP BY doctor_id\n) p ON d.id = p.doctor_id\nWHERE p.num_patients > 1",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "hospital",
+   "question": "List all pediatricians by name.",
+   "sql": "SELECT name FROM doctors WHERE specialty = 'Pediatrics'",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT T1.name \nFROM doctors AS T1 \nJOIN patients AS T2 ON T1.id = T2.doctor_id \nWHERE T1.specialty = 'Pediatrics'",
+   "correct": false,
+   "error": "no such column: T2.doctor_id"
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors have brought in more than $150 in total fees?",
+   "sql": "SELECT d.name, SUM(a.fee) AS total_fees FROM appointments a JOIN doctors d ON d.id = a.doctor_id GROUP BY d.id HAVING SUM(a.fee) > 150",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT d.name \nFROM doctors d\nJOIN (\n    SELECT doctor_id, SUM(fee) as total_fees\n    FROM appointments\n    GROUP BY doctor_id\n    HAVING SUM(fee) > 150\n) a ON d.id = a.doctor_id",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors have fewer than 10 years of experience?",
+   "sql": "SELECT name, specialty FROM doctors WHERE years_experience < 10",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT d.name\nFROM doctors d\nJOIN (\n    SELECT doctor_id, COUNT(*) as num_years_of_experience\n    FROM appointments\n    GROUP BY doctor_id\n    HAVING COUNT(*) < 10\n) a ON d.id = a.doctor_id",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "hospital",
+   "question": "How many patients are older than 70?",
+   "sql": "SELECT COUNT(*) FROM patients WHERE age > 70",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT COUNT(DISTINCT T2.id) AS num_patients_older_than_70\nFROM patients AS T1\nJOIN doctors AS T2 ON T1.doctor_id = T2.id\nWHERE T1.age < 70",
+   "correct": false,
+   "error": "no such column: T1.doctor_id"
+  },
+  {
+   "db": "hospital",
+   "question": "Which doctors have less than 10 years of experience?",
+   "sql": "SELECT name, specialty FROM doctors WHERE years_experience < 10",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT d.name\nFROM doctors d\nJOIN (\n    SELECT doctor_id, COUNT(*) as num_years_of_experience\n    FROM appointments\n    GROUP BY doctor_id\n    HAVING COUNT(*) < 10\n) p ON d.id = p.doctor_id",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "hospital",
+   "question": "For each patient, show the name and total fees, but only patients who have paid more than 150 overall.",
+   "sql": "SELECT p.name, SUM(a.fee) AS total_fee FROM patients p JOIN appointments a ON a.patient_id = p.id GROUP BY p.id, p.name HAVING SUM(a.fee) > 150 ORDER BY total_fee DESC",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT p.name, SUM(a.fee) AS total_fees\nFROM patients p\nJOIN appointments a ON p.id = a.patient_id\nGROUP BY p.id\nHAVING SUM(a.fee) > 150",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "hospital",
+   "question": "How many doctors are in the database?",
+   "sql": "SELECT COUNT(*) AS doctor_count FROM doctors",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT COUNT(DISTINCT doctor_id) FROM doctors",
+   "correct": false,
+   "error": "no such column: doctor_id"
+  },
+  {
+   "db": "hospital",
+   "question": "Who are the patients aged 82?",
+   "sql": "SELECT name FROM patients WHERE age = 82",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT p.name FROM patients p\nJOIN appointments a ON p.id = a.patient_id\nWHERE p.age = 82",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "hospital",
+   "question": "Which cities have more than one patient and an average patient age over 50?",
+   "sql": "SELECT city, COUNT(*) AS patient_count, AVG(age) AS avg_age FROM patients GROUP BY city HAVING COUNT(*) > 1 AND AVG(age) > 50",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT T2.city \nFROM patients AS T1 \nJOIN appointments AS T2 ON T1.id = T2.doctor_id \nWHERE T1.age > 50",
+   "correct": false,
+   "error": "no such column: T2.city"
+  },
+  {
+   "db": "hospital",
+   "question": "How many patients are there in each city, most populated first?",
+   "sql": "SELECT city, COUNT(*) AS patient_count FROM patients GROUP BY city ORDER BY patient_count DESC",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT p.city, COUNT(*) AS num_patients\nFROM patients p\nJOIN appointments a ON p.id = a.patient_id\nGROUP BY p.city\nORDER BY num_patients DESC",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "flights",
+   "question": "Which airline names are based in Spain, listed alphabetically?",
+   "sql": "SELECT name FROM airlines WHERE country = 'Spain' ORDER BY name",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT a.name\nFROM airlines a\nJOIN flights f ON a.id = f.airline_id\nWHERE a.country = 'Spain'\nORDER BY a.name",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "flights",
+   "question": "Which airlines fly to both Berlin and Madrid?",
+   "sql": "SELECT a.name FROM airlines a WHERE EXISTS (SELECT 1 FROM flights f JOIN airports ap ON ap.code = f.destination WHERE f.airline_id = a.id AND ap.city = 'Berlin') AND EXISTS (SELECT 1 FROM flights f JOIN airports ap ON ap.code = f.destination WHERE f.airline_id = a.id AND ap.city = 'Madrid')",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT a.name\nFROM airlines a\nJOIN flights f ON a.id = f.airline_id\nWHERE f.origin = 'Berlin' AND f.destination = 'Madrid'",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "flights",
+   "question": "Which flight IDs depart from BOM?",
+   "sql": "SELECT id FROM flights WHERE origin = 'BOM'",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT id FROM flights WHERE airline_id IN (SELECT id FROM airlines WHERE country = 'BOM')",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "flights",
+   "question": "List flights priced above the overall average, with airline name.",
+   "sql": "SELECT a.name, f.id, f.price FROM flights f JOIN airlines a ON a.id = f.airline_id WHERE f.price > (SELECT AVG(price) FROM flights)",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT a.name AS airline_name, f.price \nFROM flights f \nJOIN airlines a ON f.airline_id = a.id \nGROUP BY f.airline_id \nHAVING AVG(f.price) > (SELECT AVG(price) FROM flights)\nORDER BY f.price DESC",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "flights",
+   "question": "For airlines with flights, show each airline name and its number of flights, most flights first.",
+   "sql": "SELECT a.name, COUNT(f.id) AS flight_count FROM airlines a JOIN flights f ON a.id = f.airline_id GROUP BY a.id, a.name ORDER BY flight_count DESC",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT a.name, COUNT(f.id) AS num_flights\nFROM airlines a\nJOIN flights f ON a.id = f.airline_id\nGROUP BY a.name\nORDER BY num_flights DESC",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "flights",
+   "question": "What is the average ticket price for flights arriving in each destination city?",
+   "sql": "SELECT ap.city, AVG(f.price) AS avg_price FROM flights f JOIN airports ap ON f.destination = ap.code GROUP BY ap.city",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT T2.city, AVG(T1.price) AS avg_price\nFROM flights AS T1\nJOIN airports AS T2 ON T1.destination = T2.code\nGROUP BY T2.city",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "flights",
+   "question": "Which airlines are based in Spain?",
+   "sql": "SELECT name FROM airlines WHERE country = 'Spain'",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT a.name \nFROM airlines a\nJOIN flights f ON a.id = f.airline_id\nJOIN airports i ON f.origin = i.code AND f.destination = i.code\nWHERE i.country = 'Spain'",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "flights",
+   "question": "Which flights last more than 500 minutes, longest first?",
+   "sql": "SELECT id, duration_min FROM flights WHERE duration_min > 500 ORDER BY duration_min DESC",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT f.*\nFROM flights f\nJOIN (\n    SELECT id, MIN(duration_min) AS min_duration\n    FROM flights\n    GROUP BY id\n) subquery ON f.id = subquery.id AND f.duration_min = subquery.min_duration\nWHERE f.duration_min > 500",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "flights",
+   "question": "For each airline, show average duration and average price only when it has at least 3 flights and average price under 500.",
+   "sql": "SELECT a.name, AVG(f.duration_min) AS average_duration, AVG(f.price) AS average_price FROM airlines a JOIN flights f ON a.id = f.airline_id GROUP BY a.id, a.name HAVING COUNT(*) >= 3 AND AVG(f.price) < 500",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT \n    a.name AS airline_name,\n    AVG(f.price) AS avg_price,\n    AVG(f.duration_min) AS avg_duration\nFROM \n    flights f\nJOIN \n    airlines a ON f.airline_id = a.id\nWHERE \n    f.airline_id IN (\n        SELECT \n            id\n        FROM \n            flights\n        WHERE \n            duration_min > 15 AND duration_min < 60\n        GROUP BY \n            id",
+   "correct": false,
+   "error": "incomplete input"
+  },
+  {
+   "db": "flights",
+   "question": "How many airports are located in Germany?",
+   "sql": "SELECT COUNT(*) FROM airports WHERE country = 'Germany'",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT COUNT(DISTINCT T2.code)\nFROM flights AS T1\nJOIN airlines AS T2 ON T1.airline_id = T2.id\nJOIN airports AS T3 ON T1.origin = T3.code AND T1.destination = T3.code\nWHERE T2.country = 'Germany'",
+   "correct": false,
+   "error": "no such column: T2.code"
+  },
+  {
+   "db": "flights",
+   "question": "For flights leaving Germany, show flight ID, price, and how far above the overall average price each one is.",
+   "sql": "SELECT f.id, f.price, f.price - (SELECT AVG(price) FROM flights) AS above_avg FROM flights f JOIN airports ap ON f.origin = ap.code WHERE ap.country = 'Germany' ORDER BY above_avg DESC",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT \n    f.id,\n    f.price,\n    AVG(f.price) OVER (PARTITION BY f.airline_id) AS avg_price_above_average\nFROM \n    flights f\nJOIN \n    airlines a ON f.airline_id = a.id\nWHERE \n    a.country = 'Germany'",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "hr",
+   "question": "Which departments are not in Cairo?",
+   "sql": "SELECT name FROM departments WHERE location <> 'Cairo' ORDER BY name",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT d.name \nFROM departments d\nWHERE d.location != 'Cairo'",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "hr",
+   "question": "List project names and department names for projects whose budget is above the average project budget.",
+   "sql": "SELECT p.name, d.name FROM projects p JOIN departments d ON p.department_id = d.id WHERE p.budget > (SELECT AVG(budget) FROM projects)",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT p.name, d.name\nFROM projects p\nJOIN (\n    SELECT department_id, AVG(budget) as avg_budget\n    FROM projects\n    GROUP BY department_id\n) avg_projects ON p.department_id = avg_projects.department_id\nWHERE p.budget > avg_projects.avg_budget",
+   "correct": false,
+   "error": "no such column: d.name"
+  },
+  {
+   "db": "hr",
+   "question": "Which employees work in a department that has a project with a budget over 500000?",
+   "sql": "SELECT DISTINCT e.name FROM employees e JOIN projects p ON p.department_id = e.department_id WHERE p.budget > 500000",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT e.name \nFROM employees e\nJOIN projects p ON e.department_id = p.department_id\nWHERE p.budget > 500000",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "hr",
+   "question": "What is the average salary by job title, highest average first?",
+   "sql": "SELECT title, AVG(salary) AS avg_salary FROM employees GROUP BY title ORDER BY avg_salary DESC",
+   "level": "medium",
+   "split": "test_seen",
+   "pred": "SELECT \n    t2.title,\n    AVG(t1.salary) AS avg_salary\nFROM \n    projects p\nJOIN \n    employees e ON p.department_id = e.id\nJOIN \n    departments d ON e.department_id = d.id\nGROUP BY \n    t2.title\nORDER BY \n    avg_salary DESC\nLIMIT 1",
+   "correct": false,
+   "error": "no such column: t2.title"
+  },
+  {
+   "db": "hr",
+   "question": "What are the names and salaries of employees with the title 'Manager', highest salary first?",
+   "sql": "SELECT name, salary FROM employees WHERE title = 'Manager' ORDER BY salary DESC",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT e.name, e.salary \nFROM employees e \nJOIN departments d ON e.department_id = d.id \nWHERE e.title = 'Manager' \nORDER BY e.salary DESC",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "hr",
+   "question": "List employee names hired in 2016, alphabetically.",
+   "sql": "SELECT name FROM employees WHERE hire_year = 2016 ORDER BY name",
+   "level": "easy",
+   "split": "test_seen",
+   "pred": "SELECT DISTINCT e.name\nFROM employees e\nJOIN (\n    SELECT id\n    FROM projects\n    WHERE YEAR(hire_year) = 2016\n) p ON e.department_id = p.id\nORDER BY e.name",
+   "correct": false,
+   "error": "no such column: hire_year"
+  },
+  {
+   "db": "hr",
+   "question": "Which departments have more than one employee?",
+   "sql": "SELECT d.name FROM departments d JOIN employees e ON e.department_id = d.id GROUP BY d.id, d.name HAVING COUNT(*) > 1",
+   "level": "hard",
+   "split": "test_seen",
+   "pred": "SELECT d.name\nFROM departments d\nJOIN (\n    SELECT id, COUNT(*) as count\n    FROM employees\n    GROUP BY id\n) e ON d.id = e.id",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "List each movie title with its director's name for movies from Spain.",
+   "sql": "SELECT m.title, d.name FROM movies m JOIN directors d ON m.director_id = d.id WHERE d.country = 'Spain'",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT m.title, d.name\nFROM movies m\nJOIN directors d ON m.director_id = d.id\nWHERE m.country = 'Spain'",
+   "correct": false,
+   "error": "no such column: m.country"
+  },
+  {
+   "db": "movies",
+   "question": "Which directors have made at least two movies rated above 5?",
+   "sql": "SELECT d.name, COUNT(*) AS high_rated_movies FROM directors d JOIN movies m ON d.id = m.director_id WHERE m.rating > 5 GROUP BY d.id, d.name HAVING COUNT(*) >= 2",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT d.name\nFROM directors d\nJOIN movies m ON d.id = m.director_id\nWHERE m.rating > 5 AND COUNT(DISTINCT m.movie_id) >= 2",
+   "correct": false,
+   "error": "no such column: m.movie_id"
+  },
+  {
+   "db": "movies",
+   "question": "What is the average star rating given by each reviewer, highest average first?",
+   "sql": "SELECT reviewer, AVG(stars) AS avg_stars FROM reviews GROUP BY reviewer ORDER BY avg_stars DESC",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT r.reviewer, AVG(r.stars)\nFROM reviews r\nJOIN movies m ON r.movie_id = m.id\nJOIN directors d ON m.director_id = d.id\nGROUP BY r.reviewer\nORDER BY AVG(r.stars) ASC",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "What genres appear in the movies table?",
+   "sql": "SELECT DISTINCT genre FROM movies",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT genre FROM movies",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "What is the average rating of movies released before 2005?",
+   "sql": "SELECT AVG(rating) AS average_rating FROM movies WHERE year < 2005",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT AVG(rating) \nFROM movies \nWHERE YEAR(movie_id) < 2005",
+   "correct": false,
+   "error": "no such column: movie_id"
+  },
+  {
+   "db": "movies",
+   "question": "Show the top 3 highest-rated movies with their titles and ratings.",
+   "sql": "SELECT title, rating FROM movies ORDER BY rating DESC LIMIT 3",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT m.title, r.rating\nFROM movies m\nJOIN (\n    SELECT id, SUM(rating) as total_rating\n    FROM reviews\n    GROUP BY id\n    ORDER BY total_rating DESC\n    LIMIT 3\n) r ON m.id = r.id",
+   "correct": false,
+   "error": "no such column: rating"
+  },
+  {
+   "db": "movies",
+   "question": "Which movies reviewed by Anya Reyes received at least 4 stars, with the director name?",
+   "sql": "SELECT m.title, d.name, r.stars FROM reviews r JOIN movies m ON r.movie_id = m.id JOIN directors d ON m.director_id = d.id WHERE r.reviewer = 'Anya Reyes' AND r.stars >= 4",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT m.title\nFROM movies m\nJOIN (\n    SELECT id, COUNT(*) as count\n    FROM reviews\n    WHERE reviewer = 'Anya Reyes'\n    GROUP BY id\n) r ON m.id = r.id\nWHERE r.count >= 4",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "For each director, show the number of reviews on their movies and the average review stars, but only for directors with at least two reviews.",
+   "sql": "SELECT d.name, COUNT(r.id) AS review_count, AVG(r.stars) AS avg_stars FROM directors d JOIN movies m ON m.director_id = d.id JOIN reviews r ON r.movie_id = m.id GROUP BY d.id, d.name HAVING COUNT(r.id) >= 2",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT d.name AS DirectorName,\n       COUNT(r.id) AS NumberOfReviews,\n       AVG(r.stars) AS AverageReviewStars\nFROM directors d\nJOIN movies m ON d.id = m.director_id\nJOIN reviews r ON m.id = r.movie_id\nGROUP BY d.id\nHAVING COUNT(r.id) >= 2",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "Which five movies have the most reviews?",
+   "sql": "SELECT movie_id, COUNT(*) AS review_count FROM reviews GROUP BY movie_id ORDER BY review_count DESC LIMIT 5",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT m.title\nFROM movies m\nJOIN (\n    SELECT id, COUNT(*) as review_count\n    FROM reviews\n    GROUP BY id\n    ORDER BY review_count DESC\n    LIMIT 5\n) r ON m.id = r.id\nORDER BY r.review_count ASC",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "Which director directed how many movies? Show director name and movie count.",
+   "sql": "SELECT d.name, COUNT(*) AS movie_count FROM directors d JOIN movies m ON m.director_id = d.id GROUP BY d.id, d.name",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT d.name, COUNT(m.id)\nFROM directors d\nJOIN movies m ON d.id = m.director_id\nGROUP BY d.id\nORDER BY COUNT(m.id) DESC",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "Which reviewers gave 5-star reviews, and which movie was each for?",
+   "sql": "SELECT r.reviewer, m.title FROM reviews r JOIN movies m ON r.movie_id = m.id WHERE r.stars = 5",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT T1.reviewer, T2.title\nFROM reviews AS T1\nJOIN movies AS T2 ON T1.movie_id = T2.id\nWHERE T1.stars = 5",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "Which directors have an average movie rating above 6.0? Show director name and average.",
+   "sql": "SELECT d.name, AVG(m.rating) AS avg_rating FROM directors d JOIN movies m ON m.director_id = d.id GROUP BY d.id, d.name HAVING AVG(m.rating) > 6.0",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT d.name, AVG(r.stars) AS avg_rating\nFROM directors d\nJOIN movies m ON d.id = m.director_id\nJOIN reviews r ON m.id = r.movie_id\nGROUP BY d.id\nHAVING AVG(r.stars) > 6.0",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "Which reviewers have reviewed movies from both the Action and Comedy genres?",
+   "sql": "SELECT r.reviewer FROM reviews r JOIN movies m ON r.movie_id = m.id WHERE m.genre IN ('Action', 'Comedy') GROUP BY r.reviewer HAVING COUNT(DISTINCT m.genre) = 2",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT T2.reviewer FROM (\n    SELECT T1.reviewer, COUNT(*) AS review_count\n    FROM reviews AS T1\n    JOIN movies AS T2 ON T1.movie_id = T2.id\n    WHERE T2.genre IN ('Action', 'Comedy')\n    GROUP BY T1.reviewer\n) AS T3\nJOIN directors AS T4 ON T3.reviewer = T4.id\nWHERE T4.country = 'USA'",
+   "correct": false,
+   "error": "no such column: T2.reviewer"
+  },
+  {
+   "db": "movies",
+   "question": "Which reviewers have written more than one review?",
+   "sql": "SELECT reviewer FROM reviews GROUP BY reviewer HAVING COUNT(*) > 1",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT T2.reviewer FROM (\n    SELECT T1.reviewer, COUNT(*) AS num_reviews\n    FROM reviews AS T1\n    JOIN movies AS T2 ON T1.movie_id = T2.id\n    GROUP BY T1.reviewer\n    HAVING COUNT(T1.reviewer) > 1\n) AS T3\nJOIN directors AS T4 ON T3.reviewer = T4.id",
+   "correct": false,
+   "error": "no such column: T2.reviewer"
+  },
+  {
+   "db": "movies",
+   "question": "For each genre, what is the average movie rating?",
+   "sql": "SELECT genre, AVG(rating) AS avg_rating FROM movies GROUP BY genre ORDER BY avg_rating DESC",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT g.genre, AVG(r.rating) AS avg_rating\nFROM movies m\nJOIN reviews r ON m.id = r.movie_id\nJOIN directors d ON m.director_id = d.id\nWHERE m.genre IN (\n    SELECT DISTINCT genre\n    FROM movies\n)\nGROUP BY g.genre",
+   "correct": false,
+   "error": "no such column: g.genre"
+  },
+  {
+   "db": "movies",
+   "question": "Which action movies were released after 2008, newest first?",
+   "sql": "SELECT title, year FROM movies WHERE genre = 'Action' AND year > 2008 ORDER BY year DESC",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT m.title\nFROM movies m\nJOIN (\n    SELECT id\n    FROM movies\n    WHERE YEAR = 2008\n) latest_movies ON m.id = latest_movies.id\nORDER BY m.year DESC",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "How many directors are from Austria?",
+   "sql": "SELECT COUNT(*) AS austrian_directors FROM directors WHERE country = 'Austria'",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT COUNT(DISTINCT T1.id) AS num_directors FROM directors AS T1 JOIN movies AS T2 ON T1.id = T2.director_id WHERE T2.country = 'Austria'",
+   "correct": false,
+   "error": "no such column: T2.country"
+  },
+  {
+   "db": "movies",
+   "question": "List director names, movie titles, and reviewers for movies that have at least one 5-star review.",
+   "sql": "SELECT d.name, m.title, r.reviewer FROM directors d JOIN movies m ON d.id = m.director_id JOIN reviews r ON m.id = r.movie_id WHERE r.stars = 5 ORDER BY d.name, m.title",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT d.name, m.title, r.reviewer\nFROM directors d\nJOIN movies m ON d.id = m.director_id\nJOIN reviews r ON m.id = r.movie_id\nWHERE r.stars = 5",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "Which movie titles contain the word Crimson, sorted by rating from highest to lowest?",
+   "sql": "SELECT title FROM movies WHERE title LIKE '%Crimson%' ORDER BY rating DESC",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT m.title\nFROM movies m\nJOIN reviews r ON m.id = r.movie_id\nWHERE m.title LIKE '%Crimson%'\nORDER BY r.stars DESC",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "List each director's movies rated above 4, showing the director name and movie title.",
+   "sql": "SELECT d.name, m.title FROM directors d JOIN movies m ON d.id = m.director_id WHERE m.rating > 4 ORDER BY d.name, m.title",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT d.name, m.title\nFROM directors d\nJOIN movies m ON d.id = m.director_id\nWHERE m.rating > 4",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "Which directors have names beginning with 'H'?",
+   "sql": "SELECT name FROM directors WHERE name LIKE 'H%'",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT d.name \nFROM directors d \nJOIN movies m ON d.id = m.director_id \nWHERE d.name LIKE 'H%'",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "List movie titles and reviewer names for 5-star reviews on movies released after 2000.",
+   "sql": "SELECT m.title, r.reviewer FROM reviews r JOIN movies m ON r.movie_id = m.id WHERE r.stars = 5 AND m.year > 2000 ORDER BY m.title",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT m.title, r.reviewer\nFROM movies m\nJOIN reviews r ON m.id = r.movie_id\nWHERE m.year > 2000 AND r.stars = 5",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "For each genre, what is the average movie rating, from highest to lowest?",
+   "sql": "SELECT genre, AVG(rating) AS avg_rating FROM movies GROUP BY genre ORDER BY avg_rating DESC",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT g.genre, AVG(r.stars) AS avg_rating\nFROM movies m\nJOIN reviews r ON m.id = r.movie_id\nJOIN directors d ON m.director_id = d.id\nWHERE m.genre IN (\n    SELECT DISTINCT genre\n    FROM movies\n)\nGROUP BY g.genre\nORDER BY avg_rating DESC",
+   "correct": false,
+   "error": "no such column: g.genre"
+  },
+  {
+   "db": "movies",
+   "question": "Find movies whose rating is higher than the average rating of all movies.",
+   "sql": "SELECT title, rating FROM movies WHERE rating > (SELECT AVG(rating) FROM movies) ORDER BY rating DESC",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT m.title \nFROM movies m\nJOIN (\n    SELECT id, AVG(rating) as avg_rating\n    FROM reviews\n    GROUP BY id\n) r ON m.id = r.id\nWHERE m.rating > r.avg_rating",
+   "correct": false,
+   "error": "no such column: rating"
+  },
+  {
+   "db": "movies",
+   "question": "Which movies have never been reviewed?",
+   "sql": "SELECT title FROM movies WHERE id NOT IN (SELECT movie_id FROM reviews)",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT m.title\nFROM movies m\nJOIN (\n    SELECT id FROM reviews WHERE star = 0\n) r ON m.id = r.movie_id\nWHERE m.id NOT IN (\n    SELECT id FROM reviews WHERE star = 1\n)\nORDER BY m.id",
+   "correct": false,
+   "error": "no such column: star"
+  },
+  {
+   "db": "movies",
+   "question": "List each movie title with its director's country, ordered by country and then title.",
+   "sql": "SELECT m.title, d.country FROM movies m JOIN directors d ON m.director_id = d.id ORDER BY d.country, m.title",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT m.title, d.country \nFROM movies m \nJOIN directors d ON m.director_id = d.id \nORDER BY d.country, m.title",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "List the names of directors from Spain in alphabetical order.",
+   "sql": "SELECT name FROM directors WHERE country = 'Spain' ORDER BY name",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT d.name\nFROM directors d\nJOIN movies m ON d.id = m.director_id\nJOIN reviews r ON m.id = r.movie_id\nWHERE d.country = 'Spain'\nORDER BY d.name",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "What is the earliest release year for each genre?",
+   "sql": "SELECT genre, MIN(year) AS earliest_year FROM movies GROUP BY genre ORDER BY earliest_year",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT m.title AS movie_title, MIN(m.year) AS min_release_year\nFROM movies m\nJOIN (\n    SELECT id, MIN(year) as min_year\n    FROM movies\n    GROUP BY id\n) sub ON m.id = sub.id AND m.year = sub.min_year\nGROUP BY m.title",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "What are the titles of Comedy movies rated above 6?",
+   "sql": "SELECT title FROM movies WHERE genre = 'Comedy' AND rating > 6",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT T2.title \nFROM movies AS T1 \nJOIN reviews AS T3 ON T1.id = T3.movie_id \nJOIN directors AS T4 ON T1.director_id = T4.id \nWHERE T1.genre = 'comedy' AND T3.stars > 6",
+   "correct": false,
+   "error": "no such column: T2.title"
+  },
+  {
+   "db": "movies",
+   "question": "Which directors are based in Spain, listed alphabetically?",
+   "sql": "SELECT name FROM directors WHERE country = 'Spain' ORDER BY name",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT d.name\nFROM directors d\nJOIN movies m ON d.id = m.director_id\nJOIN reviews r ON m.id = r.movie_id\nWHERE d.country = 'Spain'\nORDER BY d.name",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "Which reviewers gave a 1-star review?",
+   "sql": "SELECT reviewer FROM reviews WHERE stars = 1",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT T2.reviewer FROM reviews AS T1 JOIN movies AS T2 ON T1.movie_id = T2.id WHERE T1.stars = 1",
+   "correct": false,
+   "error": "no such column: T2.reviewer"
+  },
+  {
+   "db": "movies",
+   "question": "Which reviews gave exactly 5 stars?",
+   "sql": "SELECT reviewer, movie_id FROM reviews WHERE stars = 5",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT T2.id FROM reviews AS T1 JOIN movies AS T2 ON T1.movie_id = T2.id WHERE T1.stars = 5",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "Which three directors have the most movies?",
+   "sql": "SELECT d.name, COUNT(*) AS movie_count FROM directors d JOIN movies m ON m.director_id = d.id GROUP BY d.id, d.name ORDER BY movie_count DESC LIMIT 3",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT d.name\nFROM directors d\nJOIN movies m ON d.id = m.director_id\nGROUP BY d.id\nORDER BY COUNT(*) DESC\nLIMIT 3",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "How many reviews awarded exactly 5 stars?",
+   "sql": "SELECT COUNT(*) FROM reviews WHERE stars = 5",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT COUNT(*) FROM reviews WHERE movie_id IN (\n    SELECT id FROM movies WHERE rating = 5\n)",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "How many movies were released after 2008?",
+   "sql": "SELECT COUNT(*) FROM movies WHERE year > 2008",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT COUNT(DISTINCT movie_id)\nFROM movies\nWHERE YEAR(year) > 2008",
+   "correct": false,
+   "error": "no such column: movie_id"
+  },
+  {
+   "db": "movies",
+   "question": "Count reviews for each star rating, sorted by stars from highest to lowest.",
+   "sql": "SELECT stars, COUNT(*) AS review_count FROM reviews GROUP BY stars ORDER BY stars DESC",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT t2.stars FROM (\n    SELECT movie_id, SUM(stars) AS total_stars\n    FROM reviews\n    GROUP BY movie_id\n    ORDER BY total_stars DESC\n) t1\nJOIN movies ON t1.movie_id = movies.id\nGROUP BY t1.movie_id",
+   "correct": false,
+   "error": "no such column: t2.stars"
+  },
+  {
+   "db": "movies",
+   "question": "Which movie has the highest rating?",
+   "sql": "SELECT title FROM movies ORDER BY rating DESC LIMIT 1",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT m.title\nFROM movies m\nJOIN (\n    SELECT id, MAX(rating) as max_rating\n    FROM reviews\n    GROUP BY id\n) r ON m.id = r.id\nORDER BY m.rating DESC\nLIMIT 1",
+   "correct": false,
+   "error": "no such column: rating"
+  },
+  {
+   "db": "movies",
+   "question": "Which movies have received both a 1-star and a 5-star review?",
+   "sql": "SELECT m.title FROM movies m JOIN reviews r ON r.movie_id = m.id GROUP BY m.id, m.title HAVING SUM(CASE WHEN r.stars = 1 THEN 1 ELSE 0 END) > 0 AND SUM(CASE WHEN r.stars = 5 THEN 1 ELSE 0 END) > 0",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT m.title\nFROM movies m\nJOIN (\n    SELECT id, MIN(stars) AS min_stars\n    FROM reviews\n    GROUP BY id\n) r ON m.id = r.id AND r.min_stars BETWEEN 1 AND 5",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "For each director, show the average rating of their movies, but only include directors whose movies average above 4.5.",
+   "sql": "SELECT d.name, AVG(m.rating) AS avg_rating FROM directors d JOIN movies m ON d.id = m.director_id GROUP BY d.id, d.name HAVING AVG(m.rating) > 4.5",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT d.name, AVG(r.stars) AS avg_rating\nFROM directors d\nJOIN movies m ON d.id = m.director_id\nJOIN reviews r ON m.id = r.movie_id\nWHERE m.rating > 4.5\nGROUP BY d.id\nHAVING COUNT(d.id) > 1",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "What is the average rating for Action movies?",
+   "sql": "SELECT AVG(rating) FROM movies WHERE genre = 'Action'",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT AVG(rating) \nFROM movies \nJOIN reviews ON movies.id = reviews.movie_id \nWHERE movies.genre = 'Action'",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "Show the top three highest-rated Comedy movies.",
+   "sql": "SELECT title, rating FROM movies WHERE genre = 'Comedy' ORDER BY rating DESC LIMIT 3",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT m.title\nFROM movies m\nJOIN (\n    SELECT id, SUM(rating) as total_rating\n    FROM reviews\n    GROUP BY id\n    ORDER BY total_rating DESC\n    LIMIT 3\n) r ON m.id = r.id\nORDER BY m.rating DESC\nLIMIT 3",
+   "correct": false,
+   "error": "no such column: rating"
+  },
+  {
+   "db": "movies",
+   "question": "Which Spanish directors have directed a Comedy movie? Show director name and movie title.",
+   "sql": "SELECT d.name, m.title FROM directors d JOIN movies m ON m.director_id = d.id WHERE d.country = 'Spain' AND m.genre = 'Comedy'",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT d.name, m.title\nFROM directors d\nJOIN movies m ON d.id = m.director_id\nWHERE m.genre = 'Comedy'\nGROUP BY d.id\nHAVING COUNT(m.id) > 1",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "For each director, what is the average rating of their movies?",
+   "sql": "SELECT d.name, AVG(m.rating) AS avg_rating FROM directors d JOIN movies m ON m.director_id = d.id GROUP BY d.id, d.name",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT d.name AS DirectorName, AVG(r.stars) AS AverageRating\nFROM directors d\nJOIN movies m ON d.id = m.director_id\nJOIN reviews r ON m.id = r.movie_id\nGROUP BY d.name",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "Count reviews per movie title.",
+   "sql": "SELECT m.title, COUNT(r.id) AS review_count FROM movies m JOIN reviews r ON r.movie_id = m.id GROUP BY m.id, m.title",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT m.title, COUNT(*) AS review_count\nFROM movies m\nJOIN reviews r ON m.id = r.movie_id\nGROUP BY m.title",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "Which movies have a rating higher than the average rating of all movies?",
+   "sql": "SELECT title, rating FROM movies WHERE rating > (SELECT AVG(rating) FROM movies)",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT m.title\nFROM movies m\nJOIN (\n    SELECT id, AVG(rating) as avg_rating\n    FROM reviews\n    GROUP BY id\n) r ON m.id = r.id\nWHERE m.rating > r.avg_rating",
+   "correct": false,
+   "error": "no such column: rating"
+  },
+  {
+   "db": "movies",
+   "question": "What are the titles of movies from 2010 or later, sorted alphabetically?",
+   "sql": "SELECT title FROM movies WHERE year >= 2010 ORDER BY title",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT T3.title \nFROM movies AS T1 \nJOIN reviews AS T2 ON T1.id = T2.movie_id \nJOIN directors AS T3 ON T1.director_id = T3.id \nWHERE T1.year >= 2010 \nORDER BY T1.title ASC",
+   "correct": false,
+   "error": "no such column: T3.title"
+  },
+  {
+   "db": "movies",
+   "question": "How many Comedy movies are in the database?",
+   "sql": "SELECT COUNT(*) AS comedy_count FROM movies WHERE genre = 'Comedy'",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT COUNT(*) FROM movies WHERE genre = 'comedy'",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "List movie titles together with their directors' names, ordered by movie year.",
+   "sql": "SELECT m.title, d.name FROM movies m JOIN directors d ON m.director_id = d.id ORDER BY m.year",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT m.title, d.name\nFROM movies m\nJOIN directors d ON m.director_id = d.id\nORDER BY m.year",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "movies",
+   "question": "List review IDs and stars for reviews with fewer than 3 stars, highest stars first.",
+   "sql": "SELECT id, stars FROM reviews WHERE stars < 3 ORDER BY stars DESC",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT T1.id, T2.stars\nFROM movies AS T1\nJOIN (\n    SELECT id, SUM(stars) as total_stars\n    FROM reviews\n    GROUP BY id\n    HAVING COUNT(*) < 4\n) AS T2 ON T1.id = T2.id\nORDER BY T2.total_stars DESC",
+   "correct": false,
+   "error": "no such column: T2.stars"
+  },
+  {
+   "db": "movies",
+   "question": "Which movies have an average review rating of at least 4 stars, showing title and average rating?",
+   "sql": "SELECT m.title, AVG(r.stars) AS avg_stars FROM movies m JOIN reviews r ON m.id = r.movie_id GROUP BY m.id, m.title HAVING AVG(r.stars) >= 4 ORDER BY avg_stars DESC",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT m.title, AVG(r.stars) AS avg_rating\nFROM movies m\nJOIN reviews r ON m.id = r.movie_id\nGROUP BY m.id\nHAVING AVG(r.stars) >= 4",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "How many players are listed as goalkeepers?",
+   "sql": "SELECT COUNT(*) AS goalkeeper_count FROM players WHERE position = 'Goalkeeper'",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT COUNT(T2.id) FROM players AS T1 JOIN teams AS T2 ON T1.team_id = T2.id WHERE T1.position = 'goalkeeper' GROUP BY T1.id HAVING COUNT(T1.id) > 0",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "Which matches were played in the 2023 season?",
+   "sql": "SELECT * FROM matches WHERE season = 2023 ORDER BY id",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT m.id\nFROM matches m\nJOIN teams t ON m.home_team_id = t.id OR m.away_team_id = t.id\nWHERE strftime('%Y', m.season) = '2023'",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "List the home team names for matches where the home team won, with scores and season.",
+   "sql": "SELECT t.name AS home_team, m.home_score, m.away_score, m.season FROM matches m JOIN teams t ON m.home_team_id = t.id WHERE m.home_score > m.away_score",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name\nFROM teams AS T1\nJOIN matches AS M ON T1.id = M.home_team_id\nWHERE M.home_score > M.away_score\nORDER BY M.season",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "List player names and ages for players aged 30 or older, oldest first.",
+   "sql": "SELECT name, age FROM players WHERE age >= 30 ORDER BY age DESC",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT T2.name, T2.age \nFROM players AS T1 \nJOIN teams AS T2 ON T1.team_id = T2.id \nWHERE T1.age >= 30 \nORDER BY T1.age ASC",
+   "correct": false,
+   "error": "no such column: T2.age"
+  },
+  {
+   "db": "sports",
+   "question": "List the top 3 oldest players with their positions and ages.",
+   "sql": "SELECT name, position, age FROM players ORDER BY age DESC LIMIT 3",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT T2.name AS player_name, T1.position, T1.age\nFROM players AS T1\nJOIN (\n    SELECT id, MIN(age) as min_age\n    FROM players\n    GROUP BY id\n) AS T2 ON T1.id = T2.id\nORDER BY T2.min_age DESC\nLIMIT 3",
+   "correct": false,
+   "error": "no such column: T2.name"
+  },
+  {
+   "db": "sports",
+   "question": "How many matches were played in each season?",
+   "sql": "SELECT season, COUNT(*) AS match_count FROM matches GROUP BY season ORDER BY season",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT T1.season, COUNT(T2.id) AS match_count\nFROM teams AS T1\nJOIN matches AS T2 ON T1.id = T2.home_team_id OR T1.id = T2.away_team_id\nGROUP BY T1.season",
+   "correct": false,
+   "error": "no such column: T1.season"
+  },
+  {
+   "db": "sports",
+   "question": "Which teams scored more than 5 total goals across all matches, counting both home and away goals?",
+   "sql": "SELECT t.name, SUM(g.goals_for) AS total_goals FROM teams t JOIN (SELECT home_team_id AS team_id, home_score AS goals_for FROM matches UNION ALL SELECT away_team_id, away_score FROM matches) AS g ON g.team_id = t.id GROUP BY t.id, t.name HAVING SUM(g.goals_for) > 5",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name \nFROM teams AS T1 \nJOIN (\n    SELECT T2.id AS home_team_id, SUM(T3.goals) AS home_goals \n    FROM players AS T3 \n    JOIN teams AS T2 ON T3.team_id = T2.id \n    WHERE T3.position = 'home' \n    GROUP BY T2.id \n    ORDER BY home_goals DESC LIMIT 1\n) AS T2 ON T1.id = T",
+   "correct": false,
+   "error": "no such column: T"
+  },
+  {
+   "db": "sports",
+   "question": "For each team, how many matches did they play as the home team?",
+   "sql": "SELECT t.name, COUNT(m.id) AS home_matches FROM teams t LEFT JOIN matches m ON m.home_team_id = t.id GROUP BY t.id, t.name ORDER BY t.name",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT T1.id, COUNT(T2.id) AS home_matches\nFROM teams AS T1\nJOIN matches AS T2 ON T1.id = T2.home_team_id\nGROUP BY T1.id",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "How many matches finished as a draw?",
+   "sql": "SELECT COUNT(*) AS draw_count FROM matches WHERE home_score = away_score",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT COUNT(*) FROM matches WHERE home_team_id = away_team_id AND season = 2023",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "What is the total number of goals scored by players younger than 25?",
+   "sql": "SELECT SUM(goals) AS total_goals FROM players WHERE age < 25",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT SUM(T1.goals) AS total_goals\nFROM players AS T1\nJOIN teams AS T2 ON T1.team_id = T2.id\nWHERE T1.age < 25",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "What is the average age of all players?",
+   "sql": "SELECT AVG(age) AS average_age FROM players",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT AVG(age) \nFROM players",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "Show match details for games where both teams scored at least one goal, including both team names.",
+   "sql": "SELECT h.name AS home_team, a.name AS away_team, m.home_score, m.away_score, m.season FROM matches m JOIN teams h ON m.home_team_id = h.id JOIN teams a ON m.away_team_id = a.id WHERE m.home_score > 0 AND m.away_score > 0",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name AS team_name\nFROM teams AS T1\nJOIN (\n    SELECT T2.id AS away_team_id, SUM(T3.goals) AS total_goals\n    FROM players AS T2\n    JOIN matches AS T3 ON T2.team_id = T3.away_team_id\n    GROUP BY T2.team_id\n    HAVING SUM(T3.goals) >= 1\n) AS T2 ON T1.id = T",
+   "correct": false,
+   "error": "no such column: T3.goals"
+  },
+  {
+   "db": "sports",
+   "question": "Which teams have more total player goals than the average team's total player goals?",
+   "sql": "SELECT t.name, SUM(p.goals) AS total_goals FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name HAVING SUM(p.goals) > (SELECT AVG(team_total) FROM (SELECT SUM(p2.goals) AS team_total FROM players p2 GROUP BY p2.team_id))",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name \nFROM teams AS T1\nJOIN (\n    SELECT T2.team_id, SUM(T3.goals) as total_goals\n    FROM players AS T2\n    JOIN matches AS T3 ON T2.id = T3.home_team_id OR T2.id = T3.away_team_id\n    GROUP BY T2.team_id\n    ORDER BY total_goals DESC\n    LIMIT 1\n) AS T4 ON T1.id",
+   "correct": false,
+   "error": "no such column: T3.goals"
+  },
+  {
+   "db": "sports",
+   "question": "Find teams whose players have scored more than 10 goals in total.",
+   "sql": "SELECT t.name, SUM(p.goals) AS total_goals FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name HAVING SUM(p.goals) > 10",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT T2.name \nFROM teams AS T1 \nJOIN players AS T2 ON T1.id = T2.team_id \nWHERE T2.goals > 10",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "What is the average age of players by position?",
+   "sql": "SELECT position, AVG(age) AS average_age FROM players GROUP BY position ORDER BY position",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT AVG(age) AS average_age\nFROM players\nJOIN teams ON players.team_id = teams.id\nWHERE position IN ('Goalkeeper', 'Defender', 'Midfielder', 'Forward')",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "What are the names of players who have scored fewer than 10 goals?",
+   "sql": "SELECT name FROM players WHERE goals < 10",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT p.name FROM players p\nJOIN matches m ON p.id = m.home_team_id OR p.id = m.away_team_id\nWHERE m.home_score < 10 AND m.away_score < 10",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "Find the team with the highest average player age among teams that have at least two players.",
+   "sql": "SELECT t.name, AVG(p.age) AS avg_age FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name HAVING COUNT(p.id) >= 2 ORDER BY avg_age DESC LIMIT 1",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name\nFROM teams AS T1\nJOIN (\n    SELECT T2.id, AVG(T3.age) as avg_age\n    FROM players AS T2\n    JOIN teams AS T3 ON T2.team_id = T3.id\n    WHERE T2.age > 0\n    GROUP BY T2.id\n    HAVING COUNT(T2.id) >= 2\n) AS T4 ON T1.id = T4.id\nORDER",
+   "correct": false,
+   "error": "incomplete input"
+  },
+  {
+   "db": "sports",
+   "question": "Show the three most recent seasons in the matches table, with the number of matches played in each.",
+   "sql": "SELECT season, COUNT(*) AS matches_played FROM matches GROUP BY season ORDER BY season DESC LIMIT 3",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT season, COUNT(*) AS match_count\nFROM matches\nGROUP BY season\nORDER BY match_count DESC\nLIMIT 3",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "Show each player's name alongside their team's name, for players under 25.",
+   "sql": "SELECT p.name AS player_name, t.name AS team_name FROM players p JOIN teams t ON p.team_id = t.id WHERE p.age < 25",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name AS player_name, T2.name AS team_name\nFROM players AS T1\nJOIN teams AS T2 ON T1.team_id = T2.id\nWHERE T1.age < 25",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "List players who are older than the average age of all players.",
+   "sql": "SELECT name, age FROM players WHERE age > (SELECT AVG(age) FROM players)",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT p.name \nFROM players p\nJOIN (\n    SELECT id, AVG(age) as avg_age\n    FROM matches\n    GROUP BY id\n) m ON p.id = m.id\nWHERE p.age > m.avg_age",
+   "correct": false,
+   "error": "no such column: age"
+  },
+  {
+   "db": "sports",
+   "question": "Which teams have at least one player and also played a match in 2023?",
+   "sql": "SELECT DISTINCT t.name FROM teams t JOIN players p ON p.team_id = t.id JOIN matches m ON (m.home_team_id = t.id OR m.away_team_id = t.id) WHERE m.season = 2023",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name \nFROM teams AS T1\nJOIN players AS T2 ON T1.id = T2.team_id\nJOIN matches AS T3 ON T2.id = T3.home_team_id OR T2.id = T3.away_team_id\nWHERE T3.season = 2023 AND T3.id IN (\n    SELECT id FROM matches WHERE season = 2023 AND year >= YEAR(T3.year)\n)\nGROUP",
+   "correct": false,
+   "error": "incomplete input"
+  },
+  {
+   "db": "sports",
+   "question": "Which teams are based in Lagos?",
+   "sql": "SELECT name FROM teams WHERE city = 'Lagos'",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT t1.name FROM teams AS t1 JOIN (\n    SELECT id FROM players WHERE position = 'Goalkeeper' AND team_id IN (\n        SELECT id FROM teams WHERE name LIKE '%Lagos%'\n    )\n) AS p ON t1.id = p.team_id\nJOIN teams AS t2 ON p.home_team_id = t2.id OR p.away_team_id = t2.id\nWHERE t2.city = 'Lagos'\nORDER BY t1",
+   "correct": false,
+   "error": "no such column: p.team_id"
+  },
+  {
+   "db": "sports",
+   "question": "Show each team name, city, and the number of matches it played as home team.",
+   "sql": "SELECT t.name, t.city, COUNT(m.id) AS home_matches FROM teams t LEFT JOIN matches m ON m.home_team_id = t.id GROUP BY t.id, t.name, t.city",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name, T1.city, COUNT(T2.id) AS home_matches\nFROM teams AS T1\nJOIN matches AS T2 ON T1.id = T2.home_team_id\nGROUP BY T1.id, T1.name",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "Which players have scored more goals than the average player?",
+   "sql": "SELECT name, goals FROM players WHERE goals > (SELECT AVG(goals) FROM players)",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT p.name\nFROM players p\nJOIN (\n    SELECT id, AVG(goals) as avg_goals\n    FROM matches m\n    JOIN teams t ON m.home_team_id = t.id OR m.away_team_id = t.id\n    GROUP BY id\n) avg_goals ON p.id = avg_goals.id\nWHERE p.goals > avg_goals.avg_goals",
+   "correct": false,
+   "error": "ambiguous column name: id"
+  },
+  {
+   "db": "sports",
+   "question": "Which players are Goalkeepers and younger than 30?",
+   "sql": "SELECT name FROM players WHERE position = 'Goalkeeper' AND age < 30",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT p.name\nFROM players p\nJOIN teams t ON p.team_id = t.id\nWHERE p.position = 'Goalkeeper' AND p.age < 30",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "List team names alphabetically.",
+   "sql": "SELECT name FROM teams ORDER BY name",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT t.name\nFROM teams AS t\nJOIN (\n    SELECT id, name\n    FROM teams\n    ORDER BY name\n) AS T2 ON t.id = T2.id",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "Which teams have total player goals over 20?",
+   "sql": "SELECT t.name, SUM(p.goals) AS total_goals FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name HAVING SUM(p.goals) > 20",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name \nFROM teams AS T1\nJOIN (\n    SELECT T2.id, SUM(T3.goals) as total_goals\n    FROM players AS T2\n    JOIN matches AS T3 ON T2.team_id = T3.home_team_id OR T2.team_id = T3.away_team_id\n    GROUP BY T2.id\n    HAVING SUM(T3.goals) > 20\n) AS T4 ON T",
+   "correct": false,
+   "error": "no such column: T3.goals"
+  },
+  {
+   "db": "sports",
+   "question": "Show all matches from the 2024 season, newest first by id.",
+   "sql": "SELECT * FROM matches WHERE season = 2024 ORDER BY id DESC",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT m.id\nFROM matches m\nJOIN teams t ON m.home_team_id = t.id OR m.away_team_id = t.id\nWHERE m.season = 2024 AND m.id IN (\n    SELECT MIN(id)\n    FROM matches\n    WHERE season = 2024\n)\nORDER BY m.id DESC",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "How many players does each team have?",
+   "sql": "SELECT t.name, COUNT(p.id) AS player_count FROM teams t LEFT JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name AS TeamName, COUNT(T2.id) AS PlayerCount\nFROM teams AS T1\nJOIN players AS T2 ON T1.id = T2.team_id\nGROUP BY T1.id\nORDER BY PlayerCount DESC",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "What is the total number of goals scored by players on each team?",
+   "sql": "SELECT t.name, SUM(p.goals) AS total_goals FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT t1.name AS TeamName, SUM(t2.goals) AS TotalGoals\nFROM teams AS t1\nJOIN players AS t2 ON t1.id = t2.team_id\nGROUP BY t1.id\nORDER BY TotalGoals DESC",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "Which team has the highest total number of goals scored by its players?",
+   "sql": "SELECT t.name, SUM(p.goals) AS total_goals FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name ORDER BY total_goals DESC LIMIT 1",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name\nFROM teams AS T1\nJOIN (\n    SELECT T2.id, SUM(T3.goals) as total_goals\n    FROM players AS T2\n    JOIN matches AS T3 ON T2.team_id = T3.home_team_id OR T2.team_id = T3.away_team_id\n    GROUP BY T2.id\n    ORDER BY total_goals DESC\n    LIMIT 1\n) AS T4 ON T1.id",
+   "correct": false,
+   "error": "no such column: T3.goals"
+  },
+  {
+   "db": "sports",
+   "question": "What are the names and ages of players older than 30?",
+   "sql": "SELECT name, age FROM players WHERE age > 30 ORDER BY age DESC",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name, T2.age \nFROM players AS T1 \nJOIN teams AS T2 ON T1.team_id = T2.id \nWHERE T1.age > 30",
+   "correct": false,
+   "error": "no such column: T2.age"
+  },
+  {
+   "db": "sports",
+   "question": "How many players are listed as Defenders?",
+   "sql": "SELECT COUNT(*) AS defender_count FROM players WHERE position = 'Defender'",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT COUNT(T2.id) FROM players AS T1 JOIN teams AS T2 ON T1.team_id = T2.id WHERE T1.position = 'Defender'",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "For each team, how many players are currently in the roster?",
+   "sql": "SELECT t.name, COUNT(p.id) AS player_count FROM teams t LEFT JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name ORDER BY t.name",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT COUNT(DISTINCT t.id) AS current_players FROM teams t\nJOIN (\n    SELECT id, SUM(goals) AS total_goals\n    FROM players p\n    GROUP BY id\n) pl ON t.id = pl.id",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "Which players play for teams founded before 1920?",
+   "sql": "SELECT p.name, t.name AS team_name FROM players p JOIN teams t ON p.team_id = t.id WHERE t.founded < 1920",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT p.name\nFROM players p\nJOIN teams t ON p.team_id = t.id\nWHERE t.founded < 1920",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "For each team, what was their highest home score in any match?",
+   "sql": "SELECT t.name, MAX(m.home_score) AS highest_home_score FROM teams t LEFT JOIN matches m ON m.home_team_id = t.id GROUP BY t.id, t.name ORDER BY highest_home_score DESC",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT t.name AS TeamName, MAX(m.home_score) AS HighestHomeScore\nFROM teams t\nJOIN matches m ON t.id = m.away_team_id\nGROUP BY t.id",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "Which teams have won at least one match as the home team?",
+   "sql": "SELECT t.name FROM teams t WHERE EXISTS (SELECT 1 FROM matches m WHERE m.home_team_id = t.id AND m.home_score > m.away_score)",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name \nFROM teams AS T1\nJOIN (\n    SELECT T2.id AS home_team_id, COUNT(*) AS win_count\n    FROM matches AS M\n    JOIN teams AS T2 ON M.home_team_id = T2.id\n    GROUP BY T2.id\n    HAVING win_count > 0\n) AS T2 ON T1.id = T2.home_team_id\nORDER BY T2.win_count DESC",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "Which players have scored more goals than the player named Maya Garcia?",
+   "sql": "SELECT name, goals FROM players WHERE goals > (SELECT goals FROM players WHERE name = 'Maya Garcia')",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT p.name\nFROM players p\nJOIN matches m ON p.id = m.home_team_id OR p.id = m.away_team_id\nWHERE p.name != 'Maya Garcia' AND p.id IN (\n    SELECT t2.id\n    FROM teams t1\n    JOIN players p2 ON t1.id = p2.team_id\n    WHERE p2.name = 'Maya Garcia'\n)\nGROUP BY p.name\nHAVING SUM(m.home_score",
+   "correct": false,
+   "error": "incomplete input"
+  },
+  {
+   "db": "sports",
+   "question": "For each match, show the home team name, away team name, and season.",
+   "sql": "SELECT h.name AS home_team, a.name AS away_team, m.season FROM matches m JOIN teams h ON m.home_team_id = h.id JOIN teams a ON m.away_team_id = a.id",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name AS home_team_name, T2.name AS away_team_name, T3.season\nFROM matches AS T1\nJOIN teams AS T2 ON T1.home_team_id = T2.id\nJOIN teams AS T3 ON T1.away_team_id = T3.id",
+   "correct": false,
+   "error": "no such column: T1.name"
+  },
+  {
+   "db": "sports",
+   "question": "What is the total goals scored by players for each team?",
+   "sql": "SELECT t.name, SUM(p.goals) AS total_goals FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name ORDER BY total_goals DESC",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name AS TeamName, SUM(T2.goals) AS TotalGoals\nFROM teams AS T1\nJOIN players AS T2 ON T1.id = T2.team_id\nGROUP BY T1.id\nORDER BY TotalGoals DESC",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "List the five most recent matches by season.",
+   "sql": "SELECT id, home_team_id, away_team_id, home_score, away_score, season FROM matches ORDER BY season DESC LIMIT 5",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT m.id AS match_id, m.home_team_id, m.away_team_id, m.season, m.home_score - m.away_score AS score\nFROM matches m\nORDER BY m.season DESC\nLIMIT 5",
+   "correct": false,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "For each player, show the player name and their team name.",
+   "sql": "SELECT p.name AS player_name, t.name AS team_name FROM players p JOIN teams t ON p.team_id = t.id",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name AS player_name, T2.name AS team_name\nFROM players AS T1\nJOIN teams AS T2 ON T1.team_id = T2.id",
+   "correct": true,
+   "error": null
+  },
+  {
+   "db": "sports",
+   "question": "What is the average age of players for each team, including only teams that have players?",
+   "sql": "SELECT t.name, AVG(p.age) AS average_age FROM teams t JOIN players p ON p.team_id = t.id GROUP BY t.id, t.name ORDER BY t.name",
+   "level": "medium",
+   "split": "test_unseen",
+   "pred": "SELECT T1.name, AVG(T2.age) AS avg_age\nFROM teams AS T1\nJOIN players AS T2 ON T1.id = T2.team_id\nGROUP BY T1.id\nHAVING COUNT(DISTINCT T3.id) > 0",
+   "correct": false,
+   "error": "no such column: T3.id"
+  },
+  {
+   "db": "sports",
+   "question": "List team names alphabetically for teams founded after 1950.",
+   "sql": "SELECT name FROM teams WHERE founded > 1950 ORDER BY name",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT T2.name \nFROM teams AS T1 \nJOIN (\n    SELECT id, name \n    FROM teams \n    WHERE year_founded >= 1950\n) AS T2 ON T1.id = T2.id",
+   "correct": false,
+   "error": "no such column: year_founded"
+  },
+  {
+   "db": "sports",
+   "question": "Show all players ordered by goals from highest to lowest.",
+   "sql": "SELECT name, goals FROM players ORDER BY goals DESC",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT p.name \nFROM players p\nJOIN (\n    SELECT id, SUM(goals) as total_goals\n    FROM matches m\n    JOIN teams t ON m.home_team_id = t.id OR m.away_team_id = t.id\n    GROUP BY id\n    ORDER BY total_goals DESC\n) AS top_players ON p.id = top_players.id",
+   "correct": false,
+   "error": "ambiguous column name: id"
+  },
+  {
+   "db": "sports",
+   "question": "Which teams were founded before 1900?",
+   "sql": "SELECT name, city, founded FROM teams WHERE founded < 1900 ORDER BY founded",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT t.name\nFROM teams AS t\nJOIN (\n    SELECT id, MIN(founded) as min_founded\n    FROM teams\n    GROUP BY id\n    HAVING created < 1900\n) AS subquery ON t.id = subquery.id\nORDER BY t.founded",
+   "correct": false,
+   "error": "no such column: created"
+  },
+  {
+   "db": "sports",
+   "question": "Which seasons had more than 10 matches?",
+   "sql": "SELECT season, COUNT(*) AS match_count FROM matches GROUP BY season HAVING COUNT(*) > 10",
+   "level": "hard",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT T2.season FROM (\n    SELECT T1.season AS season, COUNT(*) AS match_count\n    FROM matches AS T1\n    JOIN teams AS T2 ON T1.home_team_id = T2.id OR T1.away_team_id = T2.id\n    GROUP BY T1.season\n    HAVING MATCH_COUNT > 10\n) AS T3\nORDER BY T3.season",
+   "correct": false,
+   "error": "no such column: T2.season"
+  },
+  {
+   "db": "sports",
+   "question": "Which teams were founded before 1920?",
+   "sql": "SELECT name, founded FROM teams WHERE founded < 1920 ORDER BY founded",
+   "level": "easy",
+   "split": "test_unseen",
+   "pred": "SELECT DISTINCT t.name\nFROM teams AS t\nJOIN (\n    SELECT id, MIN(founded) as min_founded\n    FROM teams\n    GROUP BY id\n    HAVING MIN(founded) < 1920\n) AS subquery ON t.id = subquery.id\nORDER BY t.founded",
+   "correct": true,
+   "error": null
+  }
+ ]
+}
